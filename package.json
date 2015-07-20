@@ -1,0 +1,21 @@
+{
+  "name": "trio",
+  "version": "0.0.2",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify src/index.js -o build/trinity.min.js -d",
+    "build-prod": "browserify src/index.js -o build/trinity.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chikeichan/Trio.git"
+  },
+  "author": "Chi Kei Chan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chikeichan/Trio/issues"
+  },
+  "homepage": "https://github.com/chikeichan/Trio"
+}
