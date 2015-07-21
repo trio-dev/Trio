@@ -36,7 +36,7 @@ View._constructor.prototype.renderTmpl = function(tag, template) {
         }
 
     } else {
-        el = createOneElement(tag);
+        el = createOneElement.call(this, tag);
     }
 
     createElements.call(this, template, el);
@@ -46,11 +46,8 @@ View._constructor.prototype.renderTmpl = function(tag, template) {
     function createElements(template, base) {
         for (var tag in template) {
             if (isValidTag(tag)) {
-                var el = createOneElement(tag);
-                base.appendChild(el)
-                if (this.style[tag]) {
-                    addStyle(el, this.style[tag]);
-                }
+                var el = createOneElement.call(this, tag);
+                base.appendChild(el);
                 createElements.call(this, template[tag], el);
             }
 
@@ -74,6 +71,10 @@ View._constructor.prototype.renderTmpl = function(tag, template) {
             el.className = parsed[2];
         } else if (parsed[1] === '#') {
             el.id = parsed[2];
+        }
+
+        if (this.style[tag]) {
+            addStyle(el, this.style[tag]);
         }
 
         return el;
