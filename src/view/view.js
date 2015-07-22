@@ -1,4 +1,5 @@
-var EventBus = require('../eventBus');
+var EventBus = require('../eventBus/eventBus');
+var Stylizer = require('../stylizer/stylizer');
 var IdGenerator = require('../helpers/IdGenerator')('view');
 var View = {};
 
@@ -7,37 +8,36 @@ View._constructor = function(opts) {
 };
 
 View._constructor.prototype._initialize = function(opts) {
+    var template = this.template;
+    var style = this.style;
+
     this.id = IdGenerator();
     this.refIndex = {};
-    this.tagName = this.tagName || 'div';
 
     this.eventBus = opts.eventBus || new EventBus();
     this.eventBus.register(this.id);
 
-    if(typeof this.initialize === 'function') {
+    if (style) {
+        this.style = Stylizer.stringify(style);
+    }
+
+    if (template) {
+        this.template = this.renderTemplate(template);
+    }
+
+    if (typeof this.initialize === 'function') {
         this.initialize.apply(this, arguments);
     }
 };
 
-View._constructor.prototype.renderTmpl = function(tag, template) {
-    var el;
+View._constructor.prototype.renderTemplate = function(template) {
+    var el, style;
 
-    template = template || this.template;
+    el = document.createDocumentFragment();
 
-    if (!tag) {
-        el = document.createElement(this.tagName);
-
-        if (this.className) {
-            el.className = this.className;
-        }
-
-        if (this.style['root']) {
-            addStyle(el, this.style['root']);
-        }
-
-    } else {
-        el = createOneElement.call(this, tag);
-    }
+    style = document.createElement('style');
+    style.innerText = this.style;
+    el.appendChild(style);
 
     createElements.call(this, template, el);
 
@@ -65,7 +65,7 @@ View._constructor.prototype.renderTmpl = function(tag, template) {
         var parsed = parseTag(tag);
         var tagName = parsed[0];
 
-        var el = document.createElement(tagName)
+        var el = document.createElement(tagName);
 
         if (parsed[1] === '.') {
             el.className = parsed[2];
@@ -73,17 +73,7 @@ View._constructor.prototype.renderTmpl = function(tag, template) {
             el.id = parsed[2];
         }
 
-        if (this.style[tag]) {
-            addStyle(el, this.style[tag]);
-        }
-
         return el;
-    }
-
-    function addStyle(el, style) {
-        for (var attr in style) {
-            el.style[attr] = style[attr];
-        }
     }
 
     function addEvents(el, originEvt, newEvt) {
@@ -103,6 +93,21 @@ View._constructor.prototype.renderTmpl = function(tag, template) {
                  .split(',');
         return (tag[1] === '#' || tag[1] === '.') && tag.length === 3;
     }
+};
+
+View._constructor.prototype.appendComponentTo = function(parent) {
+    var Root, root, clone;
+    var proto = Object.create(HTMLElement.prototype);
+    
+    Root = document.registerElement(this.tagName, {
+        prototype: proto
+    });
+
+    root = new Root()
+
+    parent.appendChild(root);
+    this.root = root.createShadowRoot();
+    this.root.appendChild(this.template);
 };
 
 View._constructor.prototype.addClass = function(el, className) {

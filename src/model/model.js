@@ -1,4 +1,4 @@
-var EventBus = require('../eventBus');
+var EventBus = require('../eventBus/eventBus');
 var IdGenerator = require('../helpers/IdGenerator')('model');
 var Model = {};
 

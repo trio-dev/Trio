@@ -1,22 +1,28 @@
-var Model = require('./model');
-var Controller = require('./controller');
-var View = require('./view');
+var Model = require('./model/model');
+var Controller = require('./controller/controller');
+var View = require('./view/view');
+var Stylizer = require('./stylizer/stylizer');
 
-var Trinity = {
+var Trio = {
     Model: Model,
     Controller: Controller,
-    View: View
+    View: View,
+    Stylizer: Stylizer
 }
 
-
-for (var key in Trinity) {
-    Trinity[key].extend = extend;
+for (var key in Trio) {
+    Trio[key].extend = extend;
 }
 
-module.exports = Trinity;
+module.exports = Trio;
 
 function extend(methods) {
     var parent = this._constructor;
+
+    if (!parent) {
+        return;
+    }
+
     var staticAttr = {};
     var child = function() {
         for (var key in staticAttr) {
