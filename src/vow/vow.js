@@ -1,4 +1,4 @@
-var LinkedList = function() {
+window.LinkedList = function() {
     this.head = null;
     this.tail = null;
 };
@@ -10,10 +10,8 @@ LinkedList.prototype.addToTail = function(fn) {
     }
 
     if (!this.head) {
-        this.head = {
-            func: fn,
-            next: this.tail
-        }
+        this.head = tick;
+        this.head.next = this.tail;
     }
 
     if (this.tail) {
@@ -21,20 +19,18 @@ LinkedList.prototype.addToTail = function(fn) {
     }
 
     this.tail = tick;
-    debugger    
 };
 
 LinkedList.prototype.removeHead = function() {
-    var previousHead = this.head;
+    var previousHead = this.head.func;
 
     this.head = this.head.next;
-
-    if (this.head = null) {
+    if (this.head === null) {
         this.tail = null;
         return null;
     }
 
-    return previousHead.func;
+    return previousHead;
 };
 
 var PENDING  = {},
