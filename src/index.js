@@ -3,6 +3,7 @@ var Controller = require('./controller/controller');
 var View = require('./view/view');
 var Stylizer = require('./stylizer/stylizer');
 var EventBus = require('./eventBus/eventBus');
+var Vow = require('./vow/vow');
 
 var gEventBus;
 var moduleStore = {};
@@ -11,7 +12,8 @@ var Trio = {
     Model: Model,
     Controller: Controller,
     View: View,
-    Stylizer: Stylizer
+    Stylizer: Stylizer,
+    Vow: Vow
 }
 
 for (var key in Trio) {
@@ -38,7 +40,6 @@ Trio.export = function(key, func) {
     if (typeof func !== 'function') {
         throw new Error('Module is not a function.');
     }
-    console.log(key, func)
     moduleStore[key] = func;
 };
 
