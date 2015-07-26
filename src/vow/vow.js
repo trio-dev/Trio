@@ -17,17 +17,21 @@ LinkedList.prototype.addToTail = function(fn) {
     if (this.tail) {
         this.tail.next = tick;
     }
-
     this.tail = tick;
 };
 
 LinkedList.prototype.removeHead = function() {
-    var previousHead = this.head.func;
+    var previousHead;
 
-    this.head = this.head.next;
-    if (this.head === null) {
+    if (this.head) {
+        previousHead = this.head.func;
+    }
+
+    if (this.head.next) {
+        this.head = this.head.next;
+    } else {
         this.tail = null;
-        return null;
+        this.head = null;
     }
 
     return previousHead;
@@ -38,25 +42,39 @@ var PENDING  = {},
     REJECTED = {}; 
 
 var Vow = function() {
-    this.status = PENDING;
-    this.queue = new LinkedList();
+    var vow = {};
+
+    var status       = PENDING;
+    var resolveTicks = new LinkedList();
+    var rejectTicks  = new LinkedList();
+    var doneTick;
+
+    var val, fn;
+
+    vow.resolve = function(ret) {
+        status = RESOLVED;
+
+        while (resolveTicks.head) {
+            fn = resolveTicks.removeHead();
+            val = fn.call(this, ret);
+            ret = val;
+        }
+    };  
+
+    vow.promise = (function() {
+        var promise = {}
+
+        promise.then = function(func) {
+            resolveTicks.addToTail(func);
+            return promise;
+        };
+
+        return promise;
+
+    })();
+
+    return vow;
 };
-
-Vow.prototype.resolve = function(ret) {
-    this.status = RESOLVED;
-
-    while (this.queue.head) {
-        var fn = this.queue.removeHead();
-        var val = fn.call(this, ret);
-        ret = val;
-    }
-};
-
-Vow.prototype.then = function(func) {
-    this.queue.addToTail(func);
-};
-
-
 
 module.exports = Vow;
 
