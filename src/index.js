@@ -6,7 +6,7 @@ var EventBus = require('./eventBus/eventBus');
 var Vow = require('./vow/vow');
 
 var gEventBus;
-var moduleStore = {};
+window.moduleStore = {};
 
 var Trio = {
     Model: Model,
@@ -43,25 +43,51 @@ Trio.export = function(key, func) {
     moduleStore[key] = func;
 };
 
-Trio.import = function(key, url) {
-    if (typeof key !== 'string') {
-        throw new Error('Module name is not a string.');
+Trio.import = function(modules) {
+    var loaded = 0;
+    var count  = Object.keys(modules);
+    var vow = Trio.Vow();
+    var ret = {};
+    var url;
+
+    _import(count.pop());
+    return vow.promise;
+
+    function _import(key) {
+        var url = modules[key];
+
+        if (typeof key !== 'string') {
+            throw new Error('Module name is not a string.');
+        }
+
+        if (typeof url !== 'string') {
+            throw new Error('URL is not a string.');
+        }
+
+        var module = moduleStore[key];
+
+        if (!module) {
+            var script = document.createElement('script');
+            script.type = "text/javascript";
+            script.src = url;
+            script.onload = function() {
+                var defer = Trio.Vow();
+
+                defer.promise.then(function(data) {
+                    ret[key] = data;
+                    loaded++;
+                    if (count.length === 0) {
+                        vow.resolve(ret);
+                    } else {
+                        _import(count.pop());
+                    }
+                });
+
+                moduleStore[key].call(this, defer.resolve);
+            }.bind(this, key);
+            document.body.appendChild(script);
+        }
     }
-
-    if (typeof url !== 'string') {
-        throw new Error('URL is not a string.');
-    }
-
-    var module = moduleStore[key];
-
-    if (!module) {
-        var script = document.createElement('script');
-        script.type = "text/javascript";
-        script.src = url;
-        document.head.appendChild(script);
-    }
-
-    return moduleStore[key].apply(this, arguments);
 };
 
 

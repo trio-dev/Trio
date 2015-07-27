@@ -1,4 +1,4 @@
-window.LinkedList = function() {
+var LinkedList = function() {
     this.head = null;
     this.tail = null;
 };
@@ -47,19 +47,57 @@ var Vow = function() {
     var status       = PENDING;
     var resolveTicks = new LinkedList();
     var rejectTicks  = new LinkedList();
-    var doneTick;
-
-    var val, fn;
+    var doneTick, exception, val, fn;
 
     vow.resolve = function(ret) {
-        status = RESOLVED;
-
-        while (resolveTicks.head) {
-            fn = resolveTicks.removeHead();
-            val = fn.call(this, ret);
-            ret = val;
+        if (status === REJECTED || !resolveTicks.head) {
+            handleDone();
+            return;
         }
-    };  
+
+        status = RESOLVED;
+        val = ret;
+
+        fn = resolveTicks.removeHead();
+
+        try {
+            val = fn.call(this, ret);
+        }
+
+        catch (e) {
+            status = REJECTED;
+            exception = e;
+            vow.reject(e);
+            return;
+        }
+
+        vow.resolve(val);
+    };
+
+    vow.reject = function(e) {
+        if (status === RESOLVED || !rejectTicks.head) {
+            handleDone();
+            return;
+        }
+
+        status = REJECTED;
+        exception = e;
+
+        fn = rejectTicks.removeHead();
+
+        try {
+            fn.call(this, exception);
+        }
+
+        catch (e) {
+            exception = e;
+            vow.reject(exception);
+            return;
+        }
+
+        vow.reject(exception);
+    };
+
 
     vow.promise = (function() {
         var promise = {}
@@ -69,11 +107,29 @@ var Vow = function() {
             return promise;
         };
 
+        promise.catch = function(func) {
+            rejectTicks.addToTail(func);
+            return promise;
+        };
+
+        promise.done = function(func) {
+            doneTick = func;
+        };
+
         return promise;
 
     })();
 
     return vow;
+    
+    function handleDone() {
+        if (exception) {
+            console.error(exception);
+        }
+        if (doneTick) {
+            doneTick.call(this, val);
+        }
+    };
 };
 
 module.exports = Vow;
