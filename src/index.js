@@ -82,7 +82,7 @@ Trio.import = function(modules) {
                         _import(count.pop());
                     }
                 });
-
+                script.remove()
                 moduleStore[key].call(this, defer.resolve);
             }.bind(this, key);
             document.body.appendChild(script);
