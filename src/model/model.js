@@ -10,7 +10,7 @@ Model._constructor.prototype._initialize = function(opts) {
     var attributes = {};
     this.id = IdGenerator();
     this.eventBus = opts.eventBus || new EventBus();
-    this.eventBus.register(this.id);
+    this.eventBus = this.eventBus.register(this.id);
 
     this.set = function(key, val) {
         this._set(key, val, attributes);
@@ -28,8 +28,16 @@ Model._constructor.prototype._initialize = function(opts) {
         this.initialize.apply(this, arguments);
     }
 
-    this.set(opts);
+    this.set(_default(this.defaults, opts));
     this.eventBus.publish('initialize', this, opts);
+
+    function _default(def, opts) {
+        def = def || {}
+        for (var key in opts) {
+            def[key] = opts[key];
+        }
+        return def;
+    }
 };
 
 Model._constructor.prototype._set = function(key, val, attributes) {

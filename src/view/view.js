@@ -16,11 +16,11 @@ View._constructor.prototype._initialize = function(opts) {
     this.refIndex = {};
 
     this.eventBus = opts.eventBus || new EventBus();
-    this.eventBus.register(this.id);
+    this.eventBus = this.eventBus.register(this.id);
 
 
     if (this.isWebComponent) {
-        this.style = Stylizer.stringify(style);
+        this.style = Stylizer.prototype.stringify(style);
         this.template = this.renderTemplate(template);
         styleTag = document.createElement('style');
         styleTag.innerText = this.style;

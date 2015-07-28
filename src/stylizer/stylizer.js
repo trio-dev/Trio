@@ -1,8 +1,11 @@
-var Stylizer = {};
 var mixins = {};
 var variables = {};
 
-Stylizer.stringify = function(style) {
+var Stylizer = function() {
+
+};
+
+Stylizer.prototype.stringify = function(style) {
     var ret = '';
 
     for (var selector in style) {
@@ -19,19 +22,19 @@ Stylizer.stringify = function(style) {
     return ret;
 };
 
-Stylizer.registerMixins = function(key, func) {
+Stylizer.prototype.registerMixins = function(key, func) {
     mixins[key] = func;
 };
 
-Stylizer.registerVariables = function(key, val) {
+Stylizer.prototype.registerVariables = function(key, val) {
     variables[key] = val;
 };
 
-Stylizer.getVariable = function(key) {
+Stylizer.prototype.getVariable = function(key) {
     return variables[key];
 };
 
-Stylizer.Mixins = function(key, opts) {
+Stylizer.prototype.getMixins = function(key, opts) {
     if (!mixins[key]) {
         console.error('Mixin for ' + key + ' does not exist');
         return;

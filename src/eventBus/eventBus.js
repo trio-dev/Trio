@@ -4,18 +4,22 @@ var EventBus = function() {
 EventBus.prototype.register = function(id) {
     var id = id;
     var events = {};
-    this.subscribe = function(event, func) {
-        this._subscribe(event, func, id, events);
-    };
-    this.publish = function(event, ctx, args) {
-        this._publish(event, ctx, args, events);
-    };
-    this.unsubscribe = function(event, func) {
-        this._unsubscribe(event, func, id, events);
-    };
-    this.unsubscribeAll = function(event) {
-        this._unsubscribeAll(event, id, events);
-    }
+    return (function(context) {
+        var evt = {}
+        evt.subscribe = function(event, func) {
+            context._subscribe(event, func, id, events);
+        };
+        evt.publish = function(event, ctx, args) {
+            context._publish(event, ctx, args, events);
+        };
+        evt.unsubscribe = function(event, func) {
+            context._unsubscribe(event, func, id, events);
+        };
+        evt.unsubscribeAll = function(event) {
+            context._unsubscribeAll(event, id, events);
+        }
+        return evt;
+    })(this);
 };
 
 EventBus.prototype._subscribe = function(event, func, id, events) {
