@@ -8,8 +8,9 @@ View._constructor = function(opts) {
 };
 
 View._constructor.prototype._initialize = function(opts) {
-    var template = this.template;
-    var style = this.style;
+    var template = this.template || {};
+    var style = this.style || {};
+    var styleTag, inlineStyle;
 
     this.id = IdGenerator();
     this.refIndex = {};
@@ -17,12 +18,21 @@ View._constructor.prototype._initialize = function(opts) {
     this.eventBus = opts.eventBus || new EventBus();
     this.eventBus.register(this.id);
 
-    if (style) {
-        this.style = Stylizer.stringify(style);
-    }
 
-    if (template) {
+    if (this.isWebComponent) {
+        this.style = Stylizer.stringify(style);
         this.template = this.renderTemplate(template);
+        styleTag = document.createElement('style');
+        styleTag.innerText = this.style;
+        this.template.appendChild(styleTag)
+        this.createComponent();
+    } else {
+        inlineStyle = this.style[':host'] || {};
+        this.template = this.renderTemplate(template);
+        this.createElement();
+        for (var attr in inlineStyle) {
+            this.el.style[attr] = inlineStyle[attr];
+        }
     }
 
     if (typeof this.initialize === 'function') {
@@ -31,13 +41,9 @@ View._constructor.prototype._initialize = function(opts) {
 };
 
 View._constructor.prototype.renderTemplate = function(template) {
-    var el, style;
+    var el;
 
     el = document.createDocumentFragment();
-
-    style = document.createElement('style');
-    style.innerText = this.style;
-    el.appendChild(style);
 
     createElements.call(this, template, el);
 
@@ -47,16 +53,15 @@ View._constructor.prototype.renderTemplate = function(template) {
         for (var tag in template) {
             if (isValidTag(tag)) {
                 var el = createOneElement.call(this, tag);
+                if (!this.isWebComponent && this.style[tag]) {
+                    addInlineStyle(el, this.style[tag]);
+                }
                 base.appendChild(el);
                 createElements.call(this, template[tag], el);
-            }
-
-            if (tag === 'ref') {
+            } else if (tag === 'ref') {
                 this.refIndex[template[tag]] = base;
-            }
-
-            if (tag === 'onClick') {
-                addEvents.call(this, base, 'click' ,template[tag]);
+            } else {
+                addEvents.call(this, base, tag, template[tag]);
             }
         }
     }
@@ -74,6 +79,12 @@ View._constructor.prototype.renderTemplate = function(template) {
         }
 
         return el;
+    }
+
+    function addInlineStyle(el, style) {
+        for (var attr in style) {
+            el.style[attr] = style[attr];
+        }
     }
 
     function addEvents(el, originEvt, newEvt) {
@@ -95,19 +106,37 @@ View._constructor.prototype.renderTemplate = function(template) {
     }
 };
 
-View._constructor.prototype.appendComponentTo = function(parent) {
-    var Root, root, clone;
+View._constructor.prototype.createElement = function() {
+    var Root, root;
     var proto = Object.create(HTMLElement.prototype);
     
     Root = document.registerElement(this.tagName, {
         prototype: proto
     });
 
-    root = new Root()
+    this.el = new Root()
+    this.el.appendChild(this.template);
 
-    parent.appendChild(root);
-    this.root = root.createShadowRoot();
-    this.root.appendChild(this.template);
+    return this;
+};
+
+View._constructor.prototype.createComponent = function() {
+    var view = this;
+    var Root, root;
+    var proto = Object.create(HTMLElement.prototype);
+    
+    proto.createdCallback = function() {
+        var shadow = this.createShadowRoot();
+        shadow.appendChild(view.template);
+    };
+
+    Root = document.registerElement(this.tagName, {
+        prototype: proto
+    });
+
+    this.el = new Root()
+
+    return this;
 };
 
 View._constructor.prototype.addClass = function(el, className) {

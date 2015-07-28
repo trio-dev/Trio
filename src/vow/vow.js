@@ -129,6 +129,14 @@ var Vow = function() {
         if (doneTick) {
             doneTick.call(this, val);
         }
+
+        resolveTicks = null;
+        rejectTicks  = null;
+        doneTick     = null;
+        exception    = null;
+        val          = null;
+        fn           = null;
+
     };
 };
 

@@ -6,7 +6,9 @@ var EventBus = require('./eventBus/eventBus');
 var Vow = require('./vow/vow');
 
 var gEventBus;
-window.moduleStore = {};
+var moduleStore = {};
+
+window.test = moduleStore
 
 var Trio = {
     Model: Model,
@@ -72,6 +74,10 @@ Trio.import = function(modules) {
             script.src = url;
             script.onload = function() {
                 var defer = Trio.Vow();
+                defer.promise.then(function(d) {
+                    console.log(key);
+                    return d;
+                })
 
                 defer.promise.then(function(data) {
                     ret[key] = data;
@@ -82,7 +88,8 @@ Trio.import = function(modules) {
                         _import(count.pop());
                     }
                 });
-                script.remove()
+
+                script.remove();
                 moduleStore[key].call(this, defer.resolve);
             }.bind(this, key);
             document.body.appendChild(script);
