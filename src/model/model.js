@@ -20,11 +20,11 @@ Model._constructor.prototype._initialize = function(opts) {
         return this._get(key, attributes);
     }
 
-    this.read = function() {
+    this.clone = function() {
         return JSON.parse(JSON.stringify(attributes));
     }
 
-    if(typeof this.initialize === 'function') {
+    if (typeof this.initialize === 'function') {
         this.initialize.apply(this, arguments);
     }
 

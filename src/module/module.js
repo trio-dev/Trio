@@ -26,15 +26,12 @@ Module.prototype.import = function(modules) {
 
     vow.promise.and = {};
     vow.promise.and.export = function(key, func) {
-
         this.export(key, function(done) {
             vow.promise
                 .then(function(ret) {
-                    return func.call(this, ret);
-                }.bind(this))
-                .done(done);
+                    return func.call(this, ret, done);
+                }.bind(this));
         });
-
     }.bind(this);
 
     return vow.promise;
@@ -58,7 +55,7 @@ Module.prototype.import = function(modules) {
             script.src = url;
             script.onload = function() {
                 var defer = Vow();
-
+                console.log('Loading ' + key + '...');
                 defer.promise.then(function(data) {
                     ret[key] = data;
                     loaded++;
@@ -69,7 +66,7 @@ Module.prototype.import = function(modules) {
                     }
                 });
 
-                // script.remove();
+                script.remove();
                 moduleStore[key].call(this, defer.resolve);
             }.bind(this, key);
             document.body.appendChild(script);

@@ -31,12 +31,16 @@ Stylizer.prototype.registerVariables = function(key, val) {
 };
 
 Stylizer.prototype.getVariable = function(key) {
+    if (!variables[key]) {
+        console.error('Variable ' + key + ' does not exist.');
+        return;
+    }
     return variables[key];
 };
 
 Stylizer.prototype.getMixins = function(key, opts) {
     if (!mixins[key]) {
-        console.error('Mixin for ' + key + ' does not exist');
+        console.error('Mixin ' + key + ' does not exist.');
         return;
     }
     return mixins[key].call(this, opts);

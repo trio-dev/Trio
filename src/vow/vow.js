@@ -17,6 +17,7 @@ LinkedList.prototype.addToTail = function(fn) {
     if (this.tail) {
         this.tail.next = tick;
     }
+    
     this.tail = tick;
 };
 
@@ -89,8 +90,8 @@ var Vow = function() {
             fn.call(this, exception);
         }
 
-        catch (e) {
-            exception = e;
+        catch (err) {
+            exception = err;
             vow.reject(exception);
             return;
         }

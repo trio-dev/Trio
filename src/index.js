@@ -6,30 +6,23 @@ var EventBus = require('./eventBus/eventBus');
 var Module = require('./module/module');
 var Vow = require('./vow/vow');
 
-var gEventBus;
+var gEventBus = new EventBus();;
 
 var Trio = {
     Model: Model,
     Controller: Controller,
     View: View,
-    Vow: Vow
+    Vow: Vow,
+    Stylizer: new Stylizer(),
+    Module: new Module()
 }
 
 for (var key in Trio) {
     Trio[key].extend = extend;
 }
 
-Trio.start = function() {
-    gEventBus = new EventBus();
-    this.Stylizer = new Stylizer();
-    this.Module = new Module();
-};
-
-Trio.getGlobalEventBus = function() {
-    if (!gEventBus) {
-        throw new Error('Need to start applicaiton first.');
-    }
-    return gEventBus;
+Trio.registerGlobalEventBus = function(id) {
+    return gEventBus.register(id);
 };
 
 module.exports = Trio;
