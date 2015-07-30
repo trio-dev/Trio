@@ -60,6 +60,8 @@ View._constructor.prototype.renderTemplate = function(template) {
                 createElements.call(this, template[tag], el);
             } else if (tag === 'ref') {
                 this.refIndex[template[tag]] = base;
+            } else if (tag === 'textContent') {
+                base.textContent = template[tag];
             } else {
                 addEvents.call(this, base, tag, template[tag]);
             }
