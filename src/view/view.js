@@ -110,9 +110,15 @@ View._constructor.prototype.createElement = function() {
     var Root, root;
     var proto = Object.create(HTMLElement.prototype);
     
-    Root = document.registerElement(this.tagName, {
-        prototype: proto
-    });
+
+    try {
+        Root = document.registerElement(this.tagName, {
+            prototype: proto
+        });
+        this.el = new Root()
+    } catch (e) {
+        this.el = document.createElement(this.tagName);
+    }
 
     this.el = new Root()
     this.el.appendChild(this.template);
@@ -130,13 +136,21 @@ View._constructor.prototype.createComponent = function() {
         shadow.appendChild(view.template);
     };
 
-    Root = document.registerElement(this.tagName, {
-        prototype: proto
-    });
+    try {
+        Root = document.registerElement(this.tagName, {
+            prototype: proto
+        });
+        this.el = new Root()
+    } catch (e) {
+        this.el = document.createElement(this.tagName);
+    }
 
-    this.el = new Root()
 
     return this;
+
+    function isRegisted (name) {
+      return document.createElement(name).constructor !== HTMLElement;
+    }
 };
 
 View._constructor.prototype.addClass = function(el, className) {

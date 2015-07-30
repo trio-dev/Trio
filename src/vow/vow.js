@@ -51,52 +51,57 @@ var Vow = function() {
     var doneTick, exception, val, fn;
 
     vow.resolve = function(ret) {
-        if (status === REJECTED || !resolveTicks.head) {
-            handleDone();
-            return;
-        }
+        setTimeout(function(){
+            if (status === REJECTED || !resolveTicks.head) {
+                handleDone();
+                return;
+            }
 
-        status = RESOLVED;
-        val = ret;
+            status = RESOLVED;
+            val = ret;
 
-        fn = resolveTicks.removeHead();
+            fn = resolveTicks.removeHead();
 
-        try {
-            val = fn.call(this, ret);
-        }
+            try {
+                val = fn.call(this, ret);
+            }
 
-        catch (e) {
-            status = REJECTED;
-            exception = e;
-            vow.reject(e);
-            return;
-        }
+            catch (e) {
+                status = REJECTED;
+                exception = e;
+                vow.reject(e);
+                return;
+            }
 
-        vow.resolve(val);
+            vow.resolve(val);
+        }.bind(this), 0);
     };
 
     vow.reject = function(e) {
-        if (status === RESOLVED || !rejectTicks.head) {
-            handleDone();
-            return;
-        }
+        setTimeout(function(){
+            if (status === RESOLVED || !rejectTicks.head) {
+                handleDone();
+                return;
+            }
 
-        status = REJECTED;
-        exception = e;
+            status = REJECTED;
+            exception = e;
 
-        fn = rejectTicks.removeHead();
+            fn = rejectTicks.removeHead();
 
-        try {
-            fn.call(this, exception);
-        }
+            try {
+                fn.call(this, exception);
+            }
 
-        catch (err) {
-            exception = err;
+            catch (err) {
+                exception = err;
+                vow.reject(exception);
+                return;
+            }
+
             vow.reject(exception);
-            return;
-        }
+        }.bind(this), 0);
 
-        vow.reject(exception);
     };
 
 

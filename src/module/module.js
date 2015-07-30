@@ -2,7 +2,7 @@ var Vow = require('../vow/vow');
 var moduleStore = {};
 
 var Module = function() {
-}
+};
 
 Module.prototype.export = function(key, func) {
     if (typeof key !== 'string') {
@@ -12,7 +12,9 @@ Module.prototype.export = function(key, func) {
     if (typeof func !== 'function') {
         throw new Error('Module is not a function.');
     }
-    moduleStore[key] = func;
+    moduleStore[key] = function(done) {
+        done(func());
+    };
 };
 
 Module.prototype.import = function(modules) {
@@ -26,12 +28,14 @@ Module.prototype.import = function(modules) {
 
     vow.promise.and = {};
     vow.promise.and.export = function(key, func) {
-        this.export(key, function(done) {
+        moduleStore[key] = function(done) {
             vow.promise
                 .then(function(ret) {
-                    return func.call(this, ret, done);
-                }.bind(this));
-        });
+                    moduleStore[key] = func.bind(this, ret);
+                    return func.call(this, ret);
+                }.bind(this))
+                .done(done);
+        };
     }.bind(this);
 
     return vow.promise;
@@ -48,14 +52,17 @@ Module.prototype.import = function(modules) {
         }
 
         var module = moduleStore[key];
-
+        
         if (!module) {
             var script = document.createElement('script');
+
             script.type = "text/javascript";
             script.src = url;
             script.onload = function() {
                 var defer = Vow();
+
                 console.log('Loading ' + key + '...');
+
                 defer.promise.then(function(data) {
                     ret[key] = data;
                     loaded++;
@@ -67,9 +74,12 @@ Module.prototype.import = function(modules) {
                 });
 
                 script.remove();
-                moduleStore[key].call(this, defer.resolve);
+                moduleStore[key](defer.resolve);
             }.bind(this, key);
+
             document.body.appendChild(script);
+        } else {
+            vow.resolve(module());
         }
     }
 };
