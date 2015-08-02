@@ -1,5 +1,7 @@
 var EventBus = require('../eventBus/eventBus');
 var IdGenerator = require('../helpers/IdGenerator')('model');
+var extend = require('../helpers/extend');
+
 var Model = {};
 
 Model._constructor = function(opts) {
@@ -8,6 +10,9 @@ Model._constructor = function(opts) {
 
 Model._constructor.prototype._initialize = function(opts) {
     var attributes = {};
+
+    opts = opts || {};
+
     this.id = IdGenerator();
     this.eventBus = opts.eventBus || new EventBus();
     this.eventBus = this.eventBus.register(this.id);
@@ -61,5 +66,7 @@ Model._constructor.prototype._get = function(key, attributes) {
         return attributes[key];
     }
 };
+
+Model.extend = extend;
 
 module.exports = Model;
