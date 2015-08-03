@@ -15,7 +15,8 @@ var Trio = {
     View: View,
     Vow: Vow,
     Stylizer: new Stylizer(),
-    Module: new Module()
+    Module: new Module(),
+    Resource: new Resource()
 }
 
 Trio.registerGlobalEventBus = function(id) {
