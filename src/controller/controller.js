@@ -1,4 +1,6 @@
 var IdGenerator = require('../helpers/IdGenerator')('controller');
+var extend = require('../helpers/extend');
+
 var Controller = {};
 
 Controller._constructor = function(opts) {
@@ -30,5 +32,7 @@ Controller._constructor.prototype._addEventListeners = function() {
         this.model.eventBus.subscribe(evt, fn);
     }
 };
+
+Controller.extend = extend;
 
 module.exports = Controller;

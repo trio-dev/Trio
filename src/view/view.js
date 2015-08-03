@@ -1,6 +1,8 @@
 var EventBus = require('../eventBus/eventBus');
 var Stylizer = require('../stylizer/stylizer');
 var IdGenerator = require('../helpers/IdGenerator')('view');
+var extend = require('../helpers/extend');
+
 var View = {};
 
 View._constructor = function(opts) {
@@ -178,5 +180,7 @@ View._constructor.prototype.destroy = function() {
     this.refIndex = {};
     this.eventBus.unsubscribeAll();
 };
+
+View.extend = extend;
 
 module.exports = View;

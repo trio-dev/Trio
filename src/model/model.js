@@ -1,5 +1,8 @@
 var EventBus = require('../eventBus/eventBus');
 var IdGenerator = require('../helpers/IdGenerator')('model');
+var extend = require('../helpers/extend');
+var defaults = require('../helpers/defaults');
+
 var Model = {};
 
 Model._constructor = function(opts) {
@@ -8,12 +11,19 @@ Model._constructor = function(opts) {
 
 Model._constructor.prototype._initialize = function(opts) {
     var attributes = {};
+
+    opts = opts || {};
+
     this.id = IdGenerator();
     this.eventBus = opts.eventBus || new EventBus();
     this.eventBus = this.eventBus.register(this.id);
 
     this.set = function(key, val) {
         this._set(key, val, attributes);
+    }
+
+    this.unset = function(key) {
+        this._unset(key, attributes);
     }
 
     this.get = function(key) {
@@ -28,16 +38,8 @@ Model._constructor.prototype._initialize = function(opts) {
         this.initialize.apply(this, arguments);
     }
 
-    this.set(_default(this.defaults, opts));
+    this.set(defaults(opts, this.defaults));
     this.eventBus.publish('initialize', this, opts);
-
-    function _default(def, opts) {
-        def = def || {}
-        for (var key in opts) {
-            def[key] = opts[key];
-        }
-        return def;
-    }
 };
 
 Model._constructor.prototype._set = function(key, val, attributes) {
@@ -61,5 +63,17 @@ Model._constructor.prototype._get = function(key, attributes) {
         return attributes[key];
     }
 };
+
+Model._constructor.prototype._unset = function(key, attributes) {
+    if (typeof key === 'string') {
+        var ret = {};
+        ret[key] = attributes[key];
+        delete attributes[key];
+        this.eventBus.publish('delete', this, ret);
+        this.eventBus.publish('delete:' + key, this, val);
+    }
+};
+
+Model.extend = extend;
 
 module.exports = Model;
