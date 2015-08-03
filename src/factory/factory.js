@@ -15,6 +15,7 @@ Factory._constructor.prototype._initialize = function(opts) {
     opts = opts || {};
 
     this.id = IdGenerator();
+    this.resources = {};
     this.eventBus = opts.eventBus || new EventBus();
     this.eventBus = this.eventBus.register(this.id);
 
@@ -61,6 +62,8 @@ Factory._constructor.prototype._set = function(key, val, attributes) {
 Factory._constructor.prototype._get = function(key, attributes) {
     if (typeof key === 'string') {
         return attributes[key];
+    }  else if (typeof key === 'undefined') {
+        return attributes;
     }
 };
 
@@ -70,18 +73,26 @@ Factory._constructor.prototype._unset = function(key, attributes) {
         ret[key] = attributes[key];
         delete attributes[key];
         this.eventBus.publish('delete', this, ret);
-        this.eventBus.publish('delete:' + key, this, val);
+        this.eventBus.publish('delete:' + key, this, ret[key]);
+    } else if (typeof key === 'undefined') {
+        for (var k in attributes) {
+            this._unset(k);
+        }
     }
 };
 
-Factory._constructor.prototype._unset = function(key, attributes) {
-    if (typeof key === 'string') {
-        var ret = {};
-        ret[key] = attributes[key];
-        delete attributes[key];
-        this.eventBus.publish('delete', this, ret);
-        this.eventBus.publish('delete:' + key, this, val);
-    }
+Factory._constructor.prototype.sync = function(resource, id) {
+    this.resources[resource] = resource;
+
+    resource.eventBus.subscribe('change:' + id, function(ctx, attrs) {
+        for (var k in attrs) {
+            this.set(k, attrs[k]);
+        }
+    }.bind(this));
+
+    resource.eventBus.subscribe('delete:' + id, function(ctx, attrs) {
+        this.unset();
+    }.bind(this))
 };
 
 Factory.extend = extend;

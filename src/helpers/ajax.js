@@ -16,7 +16,7 @@ module.exports = function (opts) {
     }
 
     xhr.onload = function() {
-        if (xhr.status === 200) {
+        if (xhr.status >= 200 && xhr.status <= 299) {
             vow.resolve(xhr.responseText);
         } else {
             vow.reject(xhr.responseText);
