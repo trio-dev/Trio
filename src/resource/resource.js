@@ -57,7 +57,7 @@ Resource.prototype.register = function(name) {
     return datastore[name];
 };
 
-Resource.prototype.getOrRegister = function(name) {
+Resource.prototype.get = function(name) {
     return datastore[name] ? datastore[name] : this.register(name);
 }
 

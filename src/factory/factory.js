@@ -74,6 +74,16 @@ Factory._constructor.prototype._unset = function(key, attributes) {
     }
 };
 
+Factory._constructor.prototype._unset = function(key, attributes) {
+    if (typeof key === 'string') {
+        var ret = {};
+        ret[key] = attributes[key];
+        delete attributes[key];
+        this.eventBus.publish('delete', this, ret);
+        this.eventBus.publish('delete:' + key, this, val);
+    }
+};
+
 Factory.extend = extend;
 
 module.exports = Factory;

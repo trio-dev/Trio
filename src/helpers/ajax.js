@@ -10,6 +10,11 @@ module.exports = function (opts) {
 
     xhr.open(opts.type.toUpperCase(), opts.url);
     xhr.setRequestHeader('Content-Type', opts.contentType);
+
+    for (var header in opts.headers) {
+        xhr.setRequestHeader(header, opts.headers[header]);
+    }
+
     xhr.onload = function() {
         if (xhr.status === 200) {
             vow.resolve(xhr.responseText);
