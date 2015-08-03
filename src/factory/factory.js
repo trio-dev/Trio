@@ -1,15 +1,15 @@
 var EventBus = require('../eventBus/eventBus');
-var IdGenerator = require('../helpers/IdGenerator')('model');
+var IdGenerator = require('../helpers/IdGenerator')('factory');
 var extend = require('../helpers/extend');
 var defaults = require('../helpers/defaults');
 
-var Model = {};
+var Factory = {};
 
-Model._constructor = function(opts) {
+Factory._constructor = function(opts) {
     this._initialize(opts);
 };
 
-Model._constructor.prototype._initialize = function(opts) {
+Factory._constructor.prototype._initialize = function(opts) {
     var attributes = {};
 
     opts = opts || {};
@@ -42,7 +42,7 @@ Model._constructor.prototype._initialize = function(opts) {
     this.eventBus.publish('initialize', this, opts);
 };
 
-Model._constructor.prototype._set = function(key, val, attributes) {
+Factory._constructor.prototype._set = function(key, val, attributes) {
     if (typeof key === 'object' && !Array.isArray(key)) {
         for (var k in key) {
             this._set(k, key[k], attributes);
@@ -58,13 +58,13 @@ Model._constructor.prototype._set = function(key, val, attributes) {
     }
 };
 
-Model._constructor.prototype._get = function(key, attributes) {
+Factory._constructor.prototype._get = function(key, attributes) {
     if (typeof key === 'string') {
         return attributes[key];
     }
 };
 
-Model._constructor.prototype._unset = function(key, attributes) {
+Factory._constructor.prototype._unset = function(key, attributes) {
     if (typeof key === 'string') {
         var ret = {};
         ret[key] = attributes[key];
@@ -74,6 +74,6 @@ Model._constructor.prototype._unset = function(key, attributes) {
     }
 };
 
-Model.extend = extend;
+Factory.extend = extend;
 
-module.exports = Model;
+module.exports = Factory;

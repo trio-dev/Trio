@@ -1,4 +1,4 @@
-var Model = require('./model/model');
+var Factory = require('./factory/factory');
 var Controller = require('./controller/controller');
 var View = require('./view/view');
 var Stylizer = require('./stylizer/stylizer');
@@ -10,7 +10,7 @@ var Vow = require('./vow/vow');
 var gEventBus = new EventBus();;
 
 var Trio = {
-    Model: Model,
+    Factory: Factory,
     Controller: Controller,
     View: View,
     Vow: Vow,
