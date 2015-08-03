@@ -14,7 +14,7 @@ var Data = Factory.extend({
         opts.indexBy     = opts.indexBy || 'id';
 
         return ajax(opts)
-                .then(this.parse.bind(this))
+                .then(_parse.bind(this))
                 .then(_updateStore.bind(this));
 
         function _updateStore(rsp) {
@@ -36,6 +36,13 @@ var Data = Factory.extend({
                 }
             }
             return rsp;
+        }
+
+        function _parse(rsp) {
+            if (opts.parse) {
+                return opts.parse(rsp);
+            } 
+            return this.parse(rsp);
         }
     },
 
