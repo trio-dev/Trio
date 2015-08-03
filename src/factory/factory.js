@@ -1,5 +1,4 @@
 var EventBus = require('../eventBus/eventBus');
-var Resource = require('../resource/resource');
 var IdGenerator = require('../helpers/IdGenerator')('factory');
 var extend = require('../helpers/extend');
 var defaults = require('../helpers/defaults');
@@ -29,10 +28,6 @@ Factory._constructor.prototype._initialize = function(opts) {
 
     this.get = function(key) {
         return this._get(key, attributes);
-    }
-
-    this.destroy = function() {
-        this._destroy(attributes);
     }
 
     this.clone = function() {
@@ -67,10 +62,6 @@ Factory._constructor.prototype._get = function(key, attributes) {
     if (typeof key === 'string') {
         return attributes[key];
     }
-
-    if (typeof key === 'undefined') {
-        return attributes;
-    }
 };
 
 Factory._constructor.prototype._unset = function(key, attributes) {
@@ -81,26 +72,6 @@ Factory._constructor.prototype._unset = function(key, attributes) {
         this.eventBus.publish('delete', this, ret);
         this.eventBus.publish('delete:' + key, this, val);
     }
-};
-
-Factory._constructor.prototype.sync = function(resourceName, id) {
-    var resource = Resource.prototype.get(resourceName);
-    this.set(resource.clone());
-
-    resource.eventBus.subscribe('change:' + id, function(ctx, args) {
-        for (var key in args) {
-            var val = this.get[key];
-            if (typeof val === 'object' || val !== args.key) {
-                this.set(key, args.key);
-            }
-        }
-    }.bind(this));
-
-    resource.eventBus.subscribe('delete:' + id, function(ctx, args) {
-        for (var key in args) {
-            this.unset(key);
-        }
-    }.bind(this));
 };
 
 Factory.extend = extend;

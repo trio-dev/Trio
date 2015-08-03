@@ -2,7 +2,7 @@ var Vow = require('../vow/vow');
 var Factory = require('../factory/factory');
 var ajax = require('../helpers/ajax');
 var param = require('../helpers/param');
-
+var methods = ['read', 'create', 'update', 'delete'];
 var Data = Factory.extend({
     ajax: function(opts){
         if (!opts.url) throw new Error('Url is required.');
@@ -12,7 +12,6 @@ var Data = Factory.extend({
         opts.encode      = opts.encode || null;
         opts.payload     = opts.payload || null;
         opts.indexBy     = opts.indexBy || 'id';
-        opts.headers     = opts.headers || {};
 
         return ajax(opts)
                 .then(this.parse.bind(this))
@@ -58,11 +57,8 @@ Resource.prototype.register = function(name) {
     return datastore[name];
 };
 
-Resource.prototype.get = function(name) {
-    if (datastore[name]) {
-        throw new Error('Resource ' + name + ' does not exist.');
-    }
-    return datastore[name];
+Resource.prototype.getOrRegister = function(name) {
+    return datastore[name] ? datastore[name] : this.register(name);
 }
 
 module.exports = Resource;
