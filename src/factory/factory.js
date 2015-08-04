@@ -76,7 +76,7 @@ Factory._constructor.prototype._unset = function(key, attributes) {
         this.eventBus.publish('delete:' + key, this, ret[key]);
     } else if (typeof key === 'undefined') {
         for (var k in attributes) {
-            this._unset(k);
+            this._unset(k, attributes);
         }
     }
 };
