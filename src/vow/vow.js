@@ -72,6 +72,11 @@ var Vow = function() {
                 vow.reject(e);
                 return;
             }
+            
+            if (val && typeof val.then === 'function') {
+                val.then(vow.resolve);
+                return;
+            }
 
             vow.resolve(val);
         }.bind(this), 0);
