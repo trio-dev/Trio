@@ -38,6 +38,10 @@ Module.prototype.import = function(modules) {
         };
     }.bind(this);
 
+    vow.promise.and.import = function(modules) {
+        return vow.promise.then(this.import.bind(this, modules));
+    }.bind(this)
+
     return vow.promise;
 
     function _import(key) {
