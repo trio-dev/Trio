@@ -136,8 +136,8 @@ View._constructor.prototype.createComponent = function() {
     var proto = Object.create(HTMLElement.prototype);
     
     proto.createdCallback = function() {
-        var shadow = this.createShadowRoot();
-        shadow.appendChild(view.template);
+        view.host = this.createShadowRoot();
+        view.host.appendChild(view.template);
     };
 
     try {

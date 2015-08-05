@@ -1,5 +1,5 @@
 var Factory = require('./factory/factory');
-var Controller = require('./controller/controller');
+var Service = require('./service/service');
 var View = require('./view/view');
 var Stylizer = require('./stylizer/stylizer');
 var EventBus = require('./eventBus/eventBus');
@@ -11,7 +11,7 @@ var gEventBus = new EventBus();;
 
 var Trio = {
     Factory: Factory,
-    Controller: Controller,
+    Service: Service,
     View: View,
     Vow: Vow,
     Stylizer: new Stylizer(),
