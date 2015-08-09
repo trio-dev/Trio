@@ -8,7 +8,7 @@ Service._constructor = function(opts) {
 };
 
 Service._constructor.prototype._initialize = function(opts) {
-    this.id = IdGenerator();
+    this.uuid = IdGenerator();
 
     if (typeof this.initialize === 'function') {
         this.initialize.apply(this, arguments);

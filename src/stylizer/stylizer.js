@@ -22,6 +22,13 @@ Stylizer.prototype.stringify = function(style) {
     return ret;
 };
 
+Stylizer.prototype.createStyleTag = function(style) {
+    var tag = document.createElement('style');
+    style = this.stringify(style);
+    tag.innerText = style;
+    return tag;
+}
+
 Stylizer.prototype.registerMixins = function(key, func) {
     mixins[key] = func;
 };

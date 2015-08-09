@@ -98,6 +98,18 @@ Template.prototype.append = function() {
     return this;
 };
 
+Template.prototype.end = function() {
+  var fn = function(d) {
+      var el = _currentState.pop();
+      this.previousFragment.appendChild(el);
+  }.bind(this);
+  _queue.push({
+      type: 'end',
+      fn: fn
+  });
+  return this;  
+};
+
 Template.prototype.if = function(funcOrKey) {
     var fn = function(d) {
         _state = 'conditional';
