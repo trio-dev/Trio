@@ -14,10 +14,10 @@ Factory._constructor.prototype._initialize = function(opts) {
 
     opts = opts || {};
 
-    this.id = IdGenerator();
+    this.uuid = IdGenerator();
     this.resources = {};
     this.eventBus = opts.eventBus || new EventBus();
-    this.eventBus = this.eventBus.register(this.id);
+    this.eventBus = this.eventBus.register(this.uuid);
 
     this.set = function(key, val) {
         this._set(key, val, attributes);

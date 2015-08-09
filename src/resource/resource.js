@@ -2,7 +2,6 @@ var Vow = require('../vow/vow');
 var Factory = require('../factory/factory');
 var ajax = require('../helpers/ajax');
 var param = require('../helpers/param');
-var methods = ['read', 'create', 'update', 'delete'];
 var Data = Factory.extend({
     ajax: function(opts){
         if (!opts.url) throw new Error('Url is required.');
