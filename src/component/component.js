@@ -1,10 +1,14 @@
-var EventBus = require('../eventBus/eventBus');
 var IdGenerator = require('../helpers/IdGenerator')('component');
 var extend = require('../helpers/extend');
+var store = {};
 
 var Component = {};
 
 Component.register = function(opts) {
+    if (store[opts.tagName]) {
+        return store[opts.tagName];
+    }
+
     var param = {};
 
     // Set Prototype of custom element
@@ -14,12 +18,12 @@ Component.register = function(opts) {
 
     proto.createdCallback = function() {
         var shadow = this.createShadowRoot();
-        shadow.appendChild(opts.fragment);
+        shadow.appendChild(opts.fragment.cloneNode(true));
 
         this.uuid = IdGenerator();
 
         if (opts.style) {
-            shadow.appendChild(opts.style);
+            shadow.appendChild(opts.style.cloneNode(true));
         }
         if (opts.onCreate) {
             opts.onCreate.apply(this, arguments);
@@ -53,7 +57,51 @@ Component.register = function(opts) {
     }
 
     // Register custom element
-    document.registerElement(opts.tagName, param);
+    store[opts.tagName] = document.registerElement(opts.tagName, param);
+    return store[opts.tagName];
+};
+
+Component.extend = function(baseComponent, opts) {
+    var Base = store[baseComponent];
+    var param = {};
+    // Set Prototype of custom element
+    var proto = Object.create(HTMLElement.prototype);
+
+    _extendPrototype.call(proto, opts);
+
+    proto.createdCallback = function() {
+        Base.prototype.createdCallback.apply(this, arguments);
+        if (opts.onCreate) {
+            opts.onCreate.apply(this, arguments);
+        }
+    };
+
+    proto.attachedCallback = function() {
+        Base.prototype.attachedCallback.apply(this, arguments);
+        if (opts.onAttach) {
+            opts.onAttach.apply(this, arguments);
+        }
+        _addEventListeners.call(this, opts.events);
+    }
+
+    proto.detachedCallback = function() {
+        Base.prototype.detachedCallback.apply(this, arguments);
+        if (opts.onDetach) {
+            opts.onDetach.apply(this, arguments);
+        }
+    }
+
+    proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
+        Base.prototype.attributeChangedCallback.apply(this, arguments);
+        if (opts.onAttributesChange) {
+            opts.onAttributesChange[attrName].apply(this, [oldVal, newVal]);
+        }
+    }
+
+    param.prototype = proto;
+
+    // Register custom element
+    return document.registerElement(opts.tagName, param);
 };
 
 function _addEventListeners(events) {

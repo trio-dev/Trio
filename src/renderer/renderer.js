@@ -6,13 +6,15 @@ Renderer.prototype.createTemplate = function() {
     return new Template();
 };
 
-var _currentState = [];
-var _queue = [];
-var _conditional = undefined;
-var _state;
-var _loop;
-var _start;
-var Template = function(){};
+var Template = function(){
+    this._currentState = [];
+    this._queue = [];
+    this._conditional = undefined;
+    this._state;
+    this._loop;
+    this._start;
+
+};
 
 /**
  * Create DOM node
@@ -28,9 +30,9 @@ Template.prototype.create = function(tagName){
         } else if (tagName[1] === '#') {
             el.id = tagName[2];
         }
-        _currentState.push(el);
+        this._currentState.push(el);
     }.bind(this)
-    _queue.push({
+    this._queue.push({
         type: 'open',
         fn: fn
     });
@@ -46,7 +48,7 @@ Template.prototype.addClass = function(className) {
             el.className += separator + className;
         }
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'addClass',
         fn: fn
     });
@@ -58,7 +60,7 @@ Template.prototype.text = function(content) {
         var el = grabLast.call(this);
         el.textContent = content;
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'text',
         fn: fn
     });
@@ -74,7 +76,7 @@ Template.prototype.removeClass = function(className) {
             el.className = el.className.replace(reg,' ');
         }
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'removeClass',
         fn: fn
     });
@@ -83,27 +85,27 @@ Template.prototype.removeClass = function(className) {
 
 Template.prototype.append = function() {
     var fn = function(d) {
-        var el = _currentState.pop();
-        if (_currentState.length === 0) {
+        var el = this._currentState.pop();
+        if (this._currentState.length === 0) {
             this.previousFragment.appendChild(el);
         } else {
             var parent = grabLast.call(this);
             parent.appendChild(el);
         }
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'close',
         fn: fn
     });
     return this;
 };
 
-Template.prototype.end = function() {
+Template.prototype.appendLast = function() {
   var fn = function(d) {
-      var el = _currentState.pop();
+      var el = this._currentState.pop();
       this.previousFragment.appendChild(el);
   }.bind(this);
-  _queue.push({
+  this._queue.push({
       type: 'end',
       fn: fn
   });
@@ -112,11 +114,11 @@ Template.prototype.end = function() {
 
 Template.prototype.if = function(funcOrKey) {
     var fn = function(d) {
-        _state = 'conditional';
+        this._state = 'conditional';
         funcOrKey = evaluate(d, funcOrKey);
-        _conditional = !!funcOrKey;
+        this._conditional = !!funcOrKey;
     }.bind(this)
-    _queue.push({
+    this._queue.push({
         type: 'if',
         fn: fn
     });
@@ -125,9 +127,9 @@ Template.prototype.if = function(funcOrKey) {
 
 Template.prototype.else = function() {
     var fn = function(d) {
-        _conditional = !_conditional;
+        this._conditional = !this._conditional;
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'else',
         fn: fn
     });
@@ -137,11 +139,11 @@ Template.prototype.else = function() {
 Template.prototype.each = function(funcOrKey) {
     var fn = function(d, i) {
         funcOrKey = evaluate(d, funcOrKey);
-        _loop  = funcOrKey;
-        _state = 'loop';
-        _start = i;
+        this._loop  = funcOrKey;
+        this._state = 'loop';
+        this._start = i;
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'each',
         fn: fn
     });
@@ -150,10 +152,10 @@ Template.prototype.each = function(funcOrKey) {
 
 Template.prototype.done = function() {
     var fn = function(d, i) {
-        _conditional = undefined;
-        _state       = undefined;
+        this._conditional = undefined;
+        this._state       = undefined;
     }.bind(this);
-    _queue.push({
+    this._queue.push({
         type: 'done',
         fn: fn
     });
@@ -162,18 +164,18 @@ Template.prototype.done = function() {
 
 Template.prototype.render = function(data) {
     this.previousFragment = document.createDocumentFragment();
-    _queue.forEach(function(q, i) {
-        switch (_state) {
+    this._queue.forEach(function(q, i) {
+        switch (this._state) {
             case 'conditional':
-                if (_conditional || q.type === 'else' || q.type === 'done') {
+                if (this._conditional || q.type === 'else' || q.type === 'done') {
                     q.fn(data, i);
                 }
                 break;
             case 'loop':
                 if (q.type === 'done') {
-                    _loop.forEach(function(l, j) {
-                        for (var start = _start + 1; start < i; start++) {
-                            var loopFn = _queue[start];
+                    this._loop.forEach(function(l, j) {
+                        for (var start = this._start + 1; start < i; start++) {
+                            var loopFn = this._queue[start];
                             loopFn.fn(l, j);
                         }
                     }.bind(this));
@@ -191,7 +193,7 @@ Template.prototype.render = function(data) {
 };
 
 function grabLast() {
-    return _currentState[_currentState.length - 1];
+    return this._currentState[this._currentState.length - 1];
 };
 
 function hasClass(el, className) {
