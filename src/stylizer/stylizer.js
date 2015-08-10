@@ -45,12 +45,42 @@ Stylizer.prototype.getVariable = function(key) {
     return variables[key];
 };
 
-Stylizer.prototype.getMixins = function(key, opts) {
+Stylizer.prototype.toHex = function(rgb) {
+    rgb = rgb.replace(' ', '').split(',');
+    return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+}
+
+Stylizer.prototype.toRGB = function(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? 'rgb(' + [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ].join(',') + ')' : null;
+}
+
+Stylizer.prototype.toRGBa = function(hex, opacity) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? 'rgba(' + [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16),
+        opacity
+    ].join(',') + ')' : null;
+}
+
+Stylizer.prototype.getMixins = function(key) {
     if (!mixins[key]) {
         console.error('Mixin ' + key + ' does not exist.');
         return;
     }
-    return mixins[key].call(this, opts);
+    return mixins[key];
 };
 
 module.exports = Stylizer;
