@@ -58,10 +58,34 @@ Template.prototype.addClass = function(className) {
 Template.prototype.text = function(content) {
     var fn = function(d) {
         var el = grabLast.call(this);
-        el.textContent = content;
+        el.textContent = evaluate(d, content);
     }.bind(this);
     this._queue.push({
         type: 'text',
+        fn: fn
+    });
+    return this;
+};
+
+Template.prototype.attr = function(attr, val) {
+    var fn = function(d) {
+        var el = grabLast.call(this);
+        el.setAttribute(evaluate(d, attr), evaluate(d, val));
+    }.bind(this);
+    this._queue.push({
+        type: 'attr',
+        fn: fn
+    });
+    return this;
+};
+
+Template.prototype.style = function(attr, val) {
+    var fn = function(d) {
+        var el = grabLast.call(this);
+        el.style[evaluate(d, attr)] = evaluate(d, val);
+    }.bind(this);
+    this._queue.push({
+        type: 'style',
         fn: fn
     });
     return this;
@@ -138,8 +162,7 @@ Template.prototype.else = function() {
 
 Template.prototype.each = function(funcOrKey) {
     var fn = function(d, i) {
-        funcOrKey = evaluate(d, funcOrKey);
-        this._loop  = funcOrKey;
+        this._loop  = evaluate(d, funcOrKey);
         this._state = 'loop';
         this._start = i;
     }.bind(this);
@@ -206,18 +229,13 @@ function parseTag(tag) {
     return tag;
 };
 
-function evaluate(data, funcOrKey) {
-    switch (typeof funcOrKey) {
+function evaluate(data, funcOrString) {
+    switch (typeof funcOrString) {
         case 'function':
-            return funcOrKey.apply(this, arguments);
+            return funcOrString.apply(this, arguments);
             break;
         case 'string':
-            var keys = funcOrKey.split('.');
-            var ans = data;
-            keys.forEach(function(key, i) {
-                ans = data[key];
-            });
-            return ans;
+            return funcOrString;
             break;
     }
 }
