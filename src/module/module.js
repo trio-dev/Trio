@@ -1,8 +1,6 @@
-var Vow = require('../vow/vow');
 var moduleStore = {};
 
-var Module = function() {
-};
+var Module = function() {};
 
 Module.prototype.export = function(key, func) {
     if (typeof key !== 'string') {
@@ -40,7 +38,7 @@ Module.prototype.import = function(modules) {
 
     vow.promise.and.import = function(modules) {
         return vow.promise.then(this.import.bind(this, modules));
-    }.bind(this)
+    }.bind(this);
 
     return vow.promise;
 
@@ -87,5 +85,3 @@ Module.prototype.import = function(modules) {
         }
     }
 };
-
-module.exports = Module;

@@ -1,12 +1,10 @@
-var IdGenerator = require('../helpers/IdGenerator')('component');
-var extend = require('../helpers/extend');
-var store = {};
-
+var componentIdGenerator = idGenerator('component');
+var componentsStore = {};
 var Component = {};
 
 Component.register = function(opts) {
-    if (store[opts.tagName]) {
-        return store[opts.tagName];
+    if (componentsStore[opts.tagName]) {
+        return componentsStore[opts.tagName];
     }
 
     var param = {};
@@ -20,7 +18,7 @@ Component.register = function(opts) {
         var shadow = this.createShadowRoot();
         shadow.appendChild(opts.fragment.cloneNode(true));
 
-        this.uuid = IdGenerator();
+        this.uuid = componentIdGenerator();
 
         if (opts.style) {
             shadow.appendChild(opts.style.cloneNode(true));
@@ -35,19 +33,19 @@ Component.register = function(opts) {
             opts.onAttach.apply(this, arguments);
         }
         _addEventListeners.call(this, opts.events);
-    }
+    };
 
     proto.detachedCallback = function() {
         if (opts.onDetach) {
             opts.onDetach.apply(this, arguments);
         }
-    }
+    };
 
     proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
         if (opts.onAttributesChange) {
             opts.onAttributesChange[attrName].apply(this, [oldVal, newVal]);
         }
-    }
+    };
 
     param.prototype = proto;
 
@@ -57,12 +55,12 @@ Component.register = function(opts) {
     }
 
     // Register custom element
-    store[opts.tagName] = document.registerElement(opts.tagName, param);
-    return store[opts.tagName];
+    componentsStore[opts.tagName] = document.registerElement(opts.tagName, param);
+    return componentsStore[opts.tagName];
 };
 
 Component.extend = function(baseComponent, opts) {
-    var Base = store[baseComponent];
+    var Base = componentsStore[baseComponent];
     var param = {};
     // Set Prototype of custom element
     var proto = Object.create(HTMLElement.prototype);
@@ -82,21 +80,21 @@ Component.extend = function(baseComponent, opts) {
             opts.onAttach.apply(this, arguments);
         }
         _addEventListeners.call(this, opts.events);
-    }
+    };
 
     proto.detachedCallback = function() {
         Base.prototype.detachedCallback.apply(this, arguments);
         if (opts.onDetach) {
             opts.onDetach.apply(this, arguments);
         }
-    }
+    };
 
     proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
         Base.prototype.attributeChangedCallback.apply(this, arguments);
         if (opts.onAttributesChange) {
             opts.onAttributesChange[attrName].apply(this, [oldVal, newVal]);
         }
-    }
+    };
 
     param.prototype = proto;
 
@@ -110,7 +108,7 @@ function _addEventListeners(events) {
         var eventName = param[0];
         var element = this.shadowRoot.querySelector(param[1]);
         var handler = events[evt];
-        var fn = this[handler] = this[handler].bind(this)
+        var fn = this[handler] = this[handler].bind(this);
         
         element.addEventListener(eventName, fn);
     }
@@ -142,5 +140,3 @@ function _extendPrototype(protos) {
         }
     }
 }
-
-module.exports = Component;

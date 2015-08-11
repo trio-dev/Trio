@@ -1,6 +1,4 @@
-var Renderer = function(){
-
-};
+var Renderer = function(){};
 
 Renderer.prototype.createTemplate = function() {
     return new Template();
@@ -10,9 +8,9 @@ var Template = function(){
     this._currentState = [];
     this._queue = [];
     this._conditional = undefined;
-    this._state;
-    this._loop;
-    this._start;
+    this._state = undefined;
+    this._loop = undefined;
+    this._start = undefined;
 
 };
 
@@ -31,7 +29,7 @@ Template.prototype.create = function(tagName){
             el.id = tagName[2];
         }
         this._currentState.push(el);
-    }.bind(this)
+    }.bind(this);
     this._queue.push({
         type: 'open',
         fn: fn
@@ -141,13 +139,13 @@ Template.prototype.if = function(funcOrKey) {
         this._state = 'conditional';
         funcOrKey = evaluate(d, funcOrKey);
         this._conditional = !!funcOrKey;
-    }.bind(this)
+    }.bind(this);
     this._queue.push({
         type: 'if',
         fn: fn
     });
     return this;
-}
+};
 
 Template.prototype.else = function() {
     var fn = function(d) {
@@ -158,7 +156,7 @@ Template.prototype.else = function() {
         fn: fn
     });
     return this;
-}
+};
 
 Template.prototype.each = function(funcOrKey) {
     var fn = function(d, i) {
@@ -171,7 +169,7 @@ Template.prototype.each = function(funcOrKey) {
         fn: fn
     });
     return this;
-}
+};
 
 Template.prototype.done = function() {
     var fn = function(d, i) {
@@ -183,7 +181,7 @@ Template.prototype.done = function() {
         fn: fn
     });
     return this;
-}
+};
 
 Template.prototype.render = function(data) {
     this.previousFragment = document.createDocumentFragment();
@@ -217,27 +215,23 @@ Template.prototype.render = function(data) {
 
 function grabLast() {
     return this._currentState[this._currentState.length - 1];
-};
+}
 
 function hasClass(el, className) {
   return !!el.className.match(new RegExp('(\\s|^)'+className+'(\\s|$)'));
-};
+}
 
 function parseTag(tag) {
-    tag = tag.replace(/[.#]/, function(d) { return ',' + d + ','})
+    tag = tag.replace(/[.#]/, function(d) { return ',' + d + ',';})
              .split(',');
     return tag;
-};
+}
 
 function evaluate(data, funcOrString) {
     switch (typeof funcOrString) {
         case 'function':
             return funcOrString.apply(this, arguments);
-            break;
         case 'string':
             return funcOrString;
-            break;
     }
 }
-
-module.exports = Renderer;

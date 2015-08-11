@@ -1,13 +1,3 @@
-var Factory = require('./factory/factory');
-var Service = require('./service/service');
-var Component = require('./component/component');
-var Stylizer = require('./stylizer/stylizer');
-var EventBus = require('./eventBus/eventBus');
-var Module = require('./module/module');
-var Resource = require('./resource/resource');
-var Renderer = require('./renderer/renderer');
-var Vow = require('./vow/vow');
-
 var gEventBus = new EventBus();;
 
 var Trio = {
@@ -25,4 +15,4 @@ Trio.registerGlobalEventBus = function(id) {
     return gEventBus.register(id);
 };
 
-module.exports = Trio;
+window.Trio = Trio;

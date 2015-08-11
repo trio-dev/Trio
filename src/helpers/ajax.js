@@ -1,6 +1,4 @@
-var Vow = require('../vow/vow');
-
-module.exports = function (opts) {
+function ajax(opts) {
     var xhr = new XMLHttpRequest();
     var vow = Vow();
 
@@ -21,7 +19,7 @@ module.exports = function (opts) {
         } else {
             vow.reject(xhr.responseText);
         }
-    }
+    };
 
     if (opts.encode) {
         xhr.send();
@@ -30,4 +28,4 @@ module.exports = function (opts) {
     }
 
     return vow.promise;
-};
+}

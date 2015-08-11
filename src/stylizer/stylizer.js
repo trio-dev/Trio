@@ -1,9 +1,7 @@
 var mixins = {};
 var variables = {};
 
-var Stylizer = function() {
-
-};
+var Stylizer = function() {};
 
 Stylizer.prototype.stringify = function(style) {
     var ret = '';
@@ -27,7 +25,7 @@ Stylizer.prototype.createStyleTag = function(style) {
     style = this.stringify(style);
     tag.innerText = style;
     return tag;
-}
+};
 
 Stylizer.prototype.registerMixins = function(key, func) {
     mixins[key] = func;
@@ -53,8 +51,7 @@ Stylizer.prototype.toHex = function(rgb) {
         var hex = c.toString(16);
         return hex.length == 1 ? "0" + hex : hex;
     }
-
-}
+};
 
 Stylizer.prototype.toRGB = function(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -63,7 +60,7 @@ Stylizer.prototype.toRGB = function(hex) {
         parseInt(result[2], 16),
         parseInt(result[3], 16)
     ].join(',') + ')' : null;
-}
+};
 
 Stylizer.prototype.toRGBa = function(hex, opacity) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -73,7 +70,7 @@ Stylizer.prototype.toRGBa = function(hex, opacity) {
         parseInt(result[3], 16),
         opacity
     ].join(',') + ')' : null;
-}
+};
 
 Stylizer.prototype.getMixins = function(key) {
     if (!mixins[key]) {
@@ -82,5 +79,3 @@ Stylizer.prototype.getMixins = function(key) {
     }
     return mixins[key];
 };
-
-module.exports = Stylizer;
