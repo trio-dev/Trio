@@ -1,9 +1,5 @@
-var EventBus = require('../eventBus/eventBus');
-var IdGenerator = require('../helpers/IdGenerator')('factory');
-var extend = require('../helpers/extend');
-var defaults = require('../helpers/defaults');
-
 var Factory = {};
+var factoryIdGenerator = idGenerator('factory');
 
 Factory._constructor = function(opts) {
     this._initialize(opts);
@@ -14,26 +10,26 @@ Factory._constructor.prototype._initialize = function(opts) {
 
     opts = opts || {};
 
-    this.uuid = IdGenerator();
+    this.uuid = factoryIdGenerator();
     this.resources = {};
     this.eventBus = opts.eventBus || new EventBus();
     this.eventBus = this.eventBus.register(this.uuid);
 
     this.set = function(key, val) {
         this._set(key, val, attributes);
-    }
+    };
 
     this.unset = function(key) {
         this._unset(key, attributes);
-    }
+    };
 
     this.get = function(key) {
         return this._get(key, attributes);
-    }
+    };
 
     this.clone = function() {
         return JSON.parse(JSON.stringify(attributes));
-    }
+    };
 
     if (typeof this.initialize === 'function') {
         this.initialize.apply(this, arguments);
@@ -92,9 +88,7 @@ Factory._constructor.prototype.sync = function(resource, id) {
 
     resource.eventBus.subscribe('delete:' + id, function(ctx, attrs) {
         this.unset();
-    }.bind(this))
+    }.bind(this));
 };
 
 Factory.extend = extend;
-
-module.exports = Factory;

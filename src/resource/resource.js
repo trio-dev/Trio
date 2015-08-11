@@ -1,7 +1,3 @@
-var Vow = require('../vow/vow');
-var Factory = require('../factory/factory');
-var ajax = require('../helpers/ajax');
-var param = require('../helpers/param');
 var Data = Factory.extend({
     ajax: function(opts){
         if (!opts.url) throw new Error('Url is required.');
@@ -51,8 +47,7 @@ var Data = Factory.extend({
 });
 
 var datastore = {};
-var Resource = function() {
-};
+var Resource = function() {};
 
 Resource.prototype.register = function(name) {
     if (datastore[name]) {
@@ -65,6 +60,4 @@ Resource.prototype.register = function(name) {
 
 Resource.prototype.get = function(name) {
     return datastore[name] ? datastore[name] : this.register(name);
-}
-
-module.exports = Resource;
+};

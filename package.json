@@ -1,12 +1,10 @@
 {
   "name": "trio",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "dist/trio.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify src/index.js -o build/trinity.min.js -d",
-    "build-prod": "browserify src/index.js -o build/trio.min.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -17,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/chikeichan/Trio/issues"
   },
-  "homepage": "https://github.com/chikeichan/Trio"
+  "homepage": "https://github.com/chikeichan/Trio",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-jshint": "^1.11.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.2.0",
+    "gulp-wrap": "^0.11.0",
+    "jshint-stylish": "^2.0.1"
+  }
 }

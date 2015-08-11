@@ -1,11 +1,9 @@
-var EventBus = function() {
-};
+var EventBus = function() {};
 
 EventBus.prototype.register = function(id) {
-    var id = id;
     var events = {};
     return (function(context) {
-        var evt = {}
+        var evt = {};
         evt.subscribe = function(event, func) {
             context._subscribe(event, func, id, events);
         };
@@ -17,7 +15,7 @@ EventBus.prototype.register = function(id) {
         };
         evt.unsubscribeAll = function(event) {
             context._unsubscribeAll(event, id, events);
-        }
+        };
         return evt;
     })(this);
 };
@@ -48,11 +46,15 @@ EventBus.prototype._publish = function(event, ctx, args, events) {
         for (var bucket in eventBucket) {
             var cbQueue = eventBucket[bucket];
             if (Array.isArray(cbQueue)) {
-                cbQueue.forEach(function(cb) {
-                    cb.call(this, ctx, args);
-                });
+                cbQueue.forEach(makeEachHandler.call(this, ctx, args));
             }
         }
+    }
+
+    function makeEachHandler(ctx, args) {
+        return function(cb) {
+            cb.call(this, ctx, args);
+        };
     }
 };
 
@@ -89,5 +91,3 @@ EventBus.prototype._unsubscribeAll = function(event, id, events) {
         }
     }
 };
-
-module.exports = EventBus;

@@ -1,9 +1,9 @@
-module.exports = function (obj, defaults) {
-    defaults = defaults || {};
+function defaults(obj, def) {
+    def = def || {};
     
-    for (var key in defaults) {
+    for (var key in def) {
         if (!obj[key]) {
-            obj[key] = defaults[key];
+            obj[key] = def[key];
         }
     }
 

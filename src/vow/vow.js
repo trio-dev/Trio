@@ -7,7 +7,7 @@ LinkedList.prototype.addToTail = function(fn) {
     var tick = {
         func: fn,
         next: null
-    }
+    };
 
     if (!this.head) {
         this.head = tick;
@@ -111,7 +111,7 @@ var Vow = function() {
 
 
     vow.promise = (function() {
-        var promise = {}
+        var promise = {};
 
         promise.then = function(func) {
             resolveTicks.addToTail(func);
@@ -148,8 +148,5 @@ var Vow = function() {
         val          = null;
         fn           = null;
 
-    };
+    }
 };
-
-module.exports = Vow;
-
