@@ -1,4 +1,4 @@
-module.exports = function (object) {
+function param(object) {
     var encodedString = '';
     for (var prop in object) {
         if (object.hasOwnProperty(prop)) {

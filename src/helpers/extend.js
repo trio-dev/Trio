@@ -1,4 +1,4 @@
-module.exports = function (methods) {
+function extend(methods) {
     var parent = this._constructor;
 
     if (!parent) {
@@ -21,13 +21,13 @@ module.exports = function (methods) {
         }
     }
 
-    for (var prop in methods) {
-        if (Object.prototype.hasOwnProperty.call(methods, prop)) {
-            var method = methods[prop];
+    for (var met in methods) {
+        if (Object.prototype.hasOwnProperty.call(methods, met)) {
+            var method = methods[met];
             if (typeof method === 'function') {
-                extended[prop] = methods[prop];
+                extended[met] = methods[met];
             } else {
-                staticAttr[prop] = methods[prop];
+                staticAttr[met] = methods[met];
             }
         }
     }

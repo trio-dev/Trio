@@ -1,31 +1,31 @@
-var Vow = require('../vow/vow');
-
-module.exports = function (opts) {
+function ajax(opts) {
     var xhr = new XMLHttpRequest();
     var vow = Vow();
-    var payload = opts.payload || {};
-    var encode;
 
-    if (opts.isUrlEncoded) {
-        encode = opts.encode || param;
-        opts.url += encodeURI(encode(payload));
+    if (opts.encode) {
+        opts.url += encodeURI(opts.encode(opts.payload));
     }
 
     xhr.open(opts.type.toUpperCase(), opts.url);
     xhr.setRequestHeader('Content-Type', opts.contentType);
+
+    for (var header in opts.headers) {
+        xhr.setRequestHeader(header, opts.headers[header]);
+    }
+
     xhr.onload = function() {
-        if (xhr.status === 200) {
+        if (xhr.status >= 200 && xhr.status <= 299) {
             vow.resolve(xhr.responseText);
         } else {
             vow.reject(xhr.responseText);
         }
-    }
+    };
 
-    if (opts.isUrlEncoded) {
+    if (opts.encode) {
         xhr.send();
     } else {
-        xhr.send(opts.payload ? JSON.stringify(payload) : null);
+        xhr.send(JSON.stringify(opts.payload));
     }
 
     return vow.promise;
-};
+}
