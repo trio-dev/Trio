@@ -1104,6 +1104,10 @@ Trio.registerGlobalEventBus = function(id) {
     return gEventBus.register(id);
 };
 
-window.Trio = Trio;
+if (module && module.exports) {
+    module.exports = Trio;
+} else {
+    window.Trio = Trio;
+}
 
 })();
