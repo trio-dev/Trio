@@ -16,20 +16,6 @@ gulp.task('lint', function() {
         .pipe(jshint.reporter('fail'));
 });
 
-gulp.task('lint-dist', function() {
-    return gulp.src('dist/trio.js')
-        .pipe(jshint())
-        .pipe(jshint.reporter('jshint-stylish'))
-        .pipe(jshint.reporter('fail'));
-});
-
-// // Compile Our Sass
-// gulp.task('sass', function() {
-//     return gulp.src('scss/*.scss')
-//         .pipe(sass())
-//         .pipe(gulp.dest('css'));
-// });
-
 // Concatenate & Minify JS
 gulp.task('scripts', function() {
     return gulp.src([
@@ -53,11 +39,11 @@ gulp.task('scripts', function() {
         .pipe(gulp.dest('dist'));
 });
 
-// // Watch Files For Changes
-// gulp.task('watch', function() {
-//     gulp.watch('js/*.js', ['lint', 'scripts']);
-//     gulp.watch('scss/*.scss', ['sass']);
-// });
+// Watch Files For Changes
+gulp.task('watch', function() {
+    gulp.watch('src/*/*.js', ['lint', 'scripts']);
+    gulp.watch('src/*.js', ['lint', 'scripts']);
+});
 
 // Default Task
 gulp.task('default', ['lint', 'scripts']);
