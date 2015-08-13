@@ -3,8 +3,9 @@ var LinkedList = function() {
     this.tail = null;
 };
 
-LinkedList.prototype.addToTail = function(fn) {
+LinkedList.prototype.addToTail = function(fn, type) {
     var tick = {
+        type: type,
         func: fn,
         next: null
     };
@@ -25,7 +26,7 @@ LinkedList.prototype.removeHead = function() {
     var previousHead;
 
     if (this.head) {
-        previousHead = this.head.func;
+        previousHead = this.head;
     }
 
     if (this.head.next) {
@@ -45,68 +46,26 @@ var PENDING  = {},
 var Vow = function() {
     var vow = {};
 
-    var status       = PENDING;
-    var resolveTicks = new LinkedList();
-    var rejectTicks  = new LinkedList();
-    var doneTick, exception, val, fn;
+    var status   = PENDING;
+    var deferred = new LinkedList();
+    var value;
 
     vow.resolve = function(ret) {
-        setTimeout(function(){
-            if (status === REJECTED || !resolveTicks.head) {
-                handleDone();
-                return;
-            }
-
             status = RESOLVED;
-            val = ret;
+            value = ret;
 
-            fn = resolveTicks.removeHead();
-
-            try {
-                val = fn.call(this, ret);
+            if (deferred.head) {
+                handle();
             }
-
-            catch (e) {
-                status = REJECTED;
-                exception = e;
-                vow.reject(e);
-                return;
-            }
-            
-            if (val && typeof val.then === 'function') {
-                val.then(vow.resolve);
-                return;
-            }
-
-            vow.resolve(val);
-        }.bind(this), 0);
     };
 
-    vow.reject = function(e) {
-        setTimeout(function(){
-            if (status === RESOLVED || !rejectTicks.head) {
-                handleDone();
-                return;
-            }
-
+    vow.reject = function(err) {
             status = REJECTED;
-            exception = e;
+            value = err;
 
-            fn = rejectTicks.removeHead();
-
-            try {
-                fn.call(this, exception);
+            if (deferred.head) {
+                handle();
             }
-
-            catch (err) {
-                exception = err;
-                vow.reject(exception);
-                return;
-            }
-
-            vow.reject(exception);
-        }.bind(this), 0);
-
     };
 
 
@@ -114,17 +73,18 @@ var Vow = function() {
         var promise = {};
 
         promise.then = function(func) {
-            resolveTicks.addToTail(func);
+            console.log('add', this);
+            deferred.addToTail(func, 'then');
             return promise;
         };
 
         promise.catch = function(func) {
-            rejectTicks.addToTail(func);
+            deferred.addToTail(func, 'catch');
             return promise;
         };
 
         promise.done = function(func) {
-            doneTick = func;
+            deferred.addToTail(func, 'done');
         };
 
         return promise;
@@ -133,20 +93,58 @@ var Vow = function() {
 
     return vow;
     
-    function handleDone() {
-        if (exception) {
-            console.error(exception);
+    function handle() {
+        if (!deferred.head) {
+            return;
         }
-        if (doneTick) {
-            doneTick.call(this, val);
+        var head = deferred.removeHead();
+        var fn = head.func;
+        var type = head.type;
+
+        if (type === 'done') {
+            if (status === REJECTED) {
+                throw value;
+            } else if (status === RESOLVED) {
+                fn.call(this, value);
+            }
+            return;
         }
 
-        resolveTicks = null;
-        rejectTicks  = null;
-        doneTick     = null;
-        exception    = null;
-        val          = null;
-        fn           = null;
+        if (status === RESOLVED) {
+            if (type === 'then') {
+                if (value && typeof value.then === 'function') {
+                    value.then(vow.resolve);
+                    return;
+                }
+
+                try {
+                    value = fn.call(this, value);
+                } catch (err) {
+                    status = REJECTED;
+                    value  = err;
+                    handle();
+                    return;
+                }
+            }
+        }
+
+        if (status === REJECTED) {
+            if (type === 'catch') {
+                try {
+                    value = fn.call(this, value);
+                } catch (err) {
+                    status = REJECTED;
+                    value  = err;
+                    handle();
+                    return;
+                }
+            } else if (type === 'then') {
+                return;
+            }
+        }
+            
+        status = RESOLVED;
+        handle();
 
     }
 };
