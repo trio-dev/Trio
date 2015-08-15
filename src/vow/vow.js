@@ -93,6 +93,7 @@ var Vow = function() {
         }
 
         function handleResolve(fn) {
+            var error;
             if (state === PENDING) {
                 onResolved = fn;
             }
@@ -102,21 +103,26 @@ var Vow = function() {
                     value.then(ret.resolve);
                     return;
                 }
+
                 try {
                     value = fn.call(this, value);
-                    if (returnPromise) {
-                        returnPromise.resolve(value);
-                    }
                 } catch (err) {
                     value = err;
-                    if (returnPromise) {
-                        returnPromise.reject(value);
+                    error = true;
+                }
+
+                if (returnPromise) {
+                    if (!error) {
+                        returnPromise.resolve(value);
+                        return;
                     }
+                    returnPromise.reject(value);
                 }
             }
         }
 
         function handleReject(fn) {
+            var error;
             if (state === PENDING) {
                 onRejected = fn;
             }
@@ -124,14 +130,17 @@ var Vow = function() {
             if (state === REJECTED) {
                 try {
                     value = fn.call(this, value);
-                    if (returnPromise) {
-                        returnPromise.resolve(value);
-                    }
                 } catch (err) {
                     value = err;
-                    if (returnPromise) {
-                        returnPromise.reject(value);
+                    error = true;
+                }
+
+                if (returnPromise) {
+                    if (!error) {
+                        returnPromise.resolve(value);
+                        return;
                     }
+                    returnPromise.reject(value);
                 }
             }
 
