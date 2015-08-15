@@ -104,154 +104,141 @@ function param(object) {
     return encodedString;
 }
 
-var LinkedList = function() {
-    this.head = null;
-    this.tail = null;
-};
-
-LinkedList.prototype.addToTail = function(fn, type) {
-    var tick = {
-        type: type,
-        func: fn,
-        next: null
-    };
-
-    if (!this.head) {
-        this.head = tick;
-        this.head.next = this.tail;
-    }
-
-    if (this.tail) {
-        this.tail.next = tick;
-    }
-    
-    this.tail = tick;
-};
-
-LinkedList.prototype.removeHead = function() {
-    var previousHead;
-
-    if (this.head) {
-        previousHead = this.head;
-    }
-
-    if (this.head.next) {
-        this.head = this.head.next;
-    } else {
-        this.tail = null;
-        this.head = null;
-    }
-
-    return previousHead;
-};
-
-var PENDING  = {},
-    RESOLVED = {},
-    REJECTED = {}; 
+/*jshint es5: true */
+var PENDING   = {},
+    RESOLVED  = {},
+    REJECTED  = {},
+    FULFILLED = {};
 
 var Vow = function() {
     var vow = {};
+    var _promise = PromiseObj();
 
-    var status   = PENDING;
-    var deferred = new LinkedList();
-    var value;
-
-    vow.resolve = function(ret) {
-            status = RESOLVED;
-            value = ret;
-
-            if (deferred.head) {
-                handle();
-            }
+    vow.resolve = _promise.resolve;
+    vow.reject  = _promise.reject;
+    vow.promise = {
+        then: _promise.then,
+        catch: _promise.catch,
+        done: _promise.done
     };
-
-    vow.reject = function(err) {
-            status = REJECTED;
-            value = err;
-
-            if (deferred.head) {
-                handle();
-            }
-    };
-
-
-    vow.promise = (function() {
-        var promise = {};
-
-        promise.then = function(func) {
-            console.log('add', this);
-            deferred.addToTail(func, 'then');
-            return promise;
-        };
-
-        promise.catch = function(func) {
-            deferred.addToTail(func, 'catch');
-            return promise;
-        };
-
-        promise.done = function(func) {
-            deferred.addToTail(func, 'done');
-        };
-
-        return promise;
-
-    })();
 
     return vow;
-    
-    function handle() {
-        if (!deferred.head) {
-            return;
-        }
-        var head = deferred.removeHead();
-        var fn = head.func;
-        var type = head.type;
 
-        if (type === 'done') {
-            if (status === REJECTED) {
+    function PromiseObj() {
+        var state = PENDING;
+        var value, onResolved, onRejected, onFullfilled, returnPromise;
+
+        return {
+            resolve: resolve,
+            reject: reject,
+            then: then,
+            catch: function (failCallback) {
+                returnPromise = PromiseObj();
+                handleReject(failCallback);
+
+                return {
+                    then: returnPromise.then,
+                    catch: returnPromise.catch,
+                    done: returnPromise.done
+                };
+            },
+            done: done
+        };
+
+        function resolve(val) {
+            value = val;
+            state = RESOLVED;
+
+            if (onResolved) {
+                handleResolve(onResolved);
+            } else {
+                handleDone(onFullfilled);
+            }
+        }
+
+        function reject(err) {
+            value = err;
+            state = REJECTED;
+
+            if (onRejected) {
+                handleReject(onRejected);
+            } else {
+                handleDone(onFullfilled);
+            }
+        }
+
+        function then(successCallback) {
+            returnPromise = PromiseObj();
+            handleResolve(successCallback);
+
+            return {
+                then: returnPromise.then,
+                catch: returnPromise.catch,
+                done: returnPromise.done
+            };
+        }
+
+        function done(finallyCallback) {
+            handleDone(finallyCallback);
+        }
+
+        function handleDone(fn) {
+            if (state === PENDING) {
+                onFullfilled = fn;
+            }
+
+            if (state === RESOLVED && typeof fn === 'function') {
+                return fn.call(this, value);
+            }
+
+            if (state === REJECTED) {
                 throw value;
-            } else if (status === RESOLVED) {
-                fn.call(this, value);
             }
-            return;
         }
 
-        if (status === RESOLVED) {
-            if (type === 'then') {
+        function handleResolve(fn) {
+            if (state === PENDING) {
+                onResolved = fn;
+            }
+
+            if (state === RESOLVED) {
                 if (value && typeof value.then === 'function') {
-                    value.then(vow.resolve);
+                    value.then(resolve);
                     return;
                 }
-
                 try {
                     value = fn.call(this, value);
+                    if (returnPromise) {
+                        returnPromise.resolve(value);
+                    }
                 } catch (err) {
-                    status = REJECTED;
-                    value  = err;
-                    handle();
-                    return;
+                    value = err;
+                    if (returnPromise) {
+                        returnPromise.reject(value);
+                    }
                 }
             }
         }
 
-        if (status === REJECTED) {
-            if (type === 'catch') {
+        function handleReject(fn) {
+            if (state === PENDING) {
+                onRejected = fn;
+            }
+
+            if (state === REJECTED) {
                 try {
                     value = fn.call(this, value);
+                    if (returnPromise) {
+                        returnPromise.resolve(value);
+                    }
                 } catch (err) {
-                    status = REJECTED;
-                    value  = err;
-                    handle();
-                    return;
+                    value = err;
+                    if (returnPromise) {
+                        returnPromise.reject(value);
+                    }
                 }
-            } else if (type === 'then') {
-                return;
             }
         }
-            
-        status = RESOLVED;
-        handle();
-
     }
 };
 
@@ -719,7 +706,7 @@ Module.prototype.import = function(modules) {
     var ret = {};
     var url;
 
-    _import(count.pop());
+    _import(count.pop(), vow);
 
     vow.promise.and = {};
     vow.promise.and.export = function(key, func) {
@@ -739,7 +726,7 @@ Module.prototype.import = function(modules) {
 
     return vow.promise;
 
-    function _import(key) {
+    function _import(key, promise) {
         var url = modules[key];
 
         if (typeof key !== 'string') {
@@ -766,9 +753,9 @@ Module.prototype.import = function(modules) {
                     ret[key] = data;
                     loaded++;
                     if (count.length === 0) {
-                        vow.resolve(ret);
+                        promise.resolve(ret);
                     } else {
-                        _import(count.pop());
+                        _import(count.pop(), promise);
                     }
                 });
 
@@ -778,7 +765,7 @@ Module.prototype.import = function(modules) {
 
             document.body.appendChild(script);
         } else {
-            vow.resolve(module());
+            promise.resolve(module());
         }
     }
 };
