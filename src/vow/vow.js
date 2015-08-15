@@ -1,152 +1,137 @@
-var LinkedList = function() {
-    this.head = null;
-    this.tail = null;
-};
-
-LinkedList.prototype.addToTail = function(fn) {
-    var tick = {
-        func: fn,
-        next: null
-    };
-
-    if (!this.head) {
-        this.head = tick;
-        this.head.next = this.tail;
-    }
-
-    if (this.tail) {
-        this.tail.next = tick;
-    }
-    
-    this.tail = tick;
-};
-
-LinkedList.prototype.removeHead = function() {
-    var previousHead;
-
-    if (this.head) {
-        previousHead = this.head.func;
-    }
-
-    if (this.head.next) {
-        this.head = this.head.next;
-    } else {
-        this.tail = null;
-        this.head = null;
-    }
-
-    return previousHead;
-};
-
-var PENDING  = {},
-    RESOLVED = {},
-    REJECTED = {}; 
+/*jshint es5: true */
+var PENDING   = {},
+    RESOLVED  = {},
+    REJECTED  = {},
+    FULFILLED = {};
 
 var Vow = function() {
     var vow = {};
+    var _promise = PromiseObj();
 
-    var status       = PENDING;
-    var resolveTicks = new LinkedList();
-    var rejectTicks  = new LinkedList();
-    var doneTick, exception, val, fn;
-
-    vow.resolve = function(ret) {
-        setTimeout(function(){
-            if (status === REJECTED || !resolveTicks.head) {
-                handleDone();
-                return;
-            }
-
-            status = RESOLVED;
-            val = ret;
-
-            fn = resolveTicks.removeHead();
-
-            try {
-                val = fn.call(this, ret);
-            }
-
-            catch (e) {
-                status = REJECTED;
-                exception = e;
-                vow.reject(e);
-                return;
-            }
-            
-            if (val && typeof val.then === 'function') {
-                val.then(vow.resolve);
-                return;
-            }
-
-            vow.resolve(val);
-        }.bind(this), 0);
+    vow.resolve = _promise.resolve;
+    vow.reject  = _promise.reject;
+    vow.promise = {
+        then: _promise.then,
+        catch: _promise.catch,
+        done: _promise.done
     };
-
-    vow.reject = function(e) {
-        setTimeout(function(){
-            if (status === RESOLVED || !rejectTicks.head) {
-                handleDone();
-                return;
-            }
-
-            status = REJECTED;
-            exception = e;
-
-            fn = rejectTicks.removeHead();
-
-            try {
-                fn.call(this, exception);
-            }
-
-            catch (err) {
-                exception = err;
-                vow.reject(exception);
-                return;
-            }
-
-            vow.reject(exception);
-        }.bind(this), 0);
-
-    };
-
-
-    vow.promise = (function() {
-        var promise = {};
-
-        promise.then = function(func) {
-            resolveTicks.addToTail(func);
-            return promise;
-        };
-
-        promise.catch = function(func) {
-            rejectTicks.addToTail(func);
-            return promise;
-        };
-
-        promise.done = function(func) {
-            doneTick = func;
-        };
-
-        return promise;
-
-    })();
 
     return vow;
-    
-    function handleDone() {
-        if (exception) {
-            console.error(exception);
-        }
-        if (doneTick) {
-            doneTick.call(this, val);
+
+    function PromiseObj() {
+        var state = PENDING;
+        var value, onResolved, onRejected, onFullfilled, returnPromise;
+
+        return {
+            resolve: resolve,
+            reject: reject,
+            then: then,
+            catch: function (failCallback) {
+                returnPromise = PromiseObj();
+                handleReject(failCallback);
+
+                return {
+                    then: returnPromise.then,
+                    catch: returnPromise.catch,
+                    done: returnPromise.done
+                };
+            },
+            done: done
+        };
+
+        function resolve(val) {
+            value = val;
+            state = RESOLVED;
+
+            if (onResolved) {
+                handleResolve(onResolved);
+            } else {
+                handleDone(onFullfilled);
+            }
         }
 
-        resolveTicks = null;
-        rejectTicks  = null;
-        doneTick     = null;
-        exception    = null;
-        val          = null;
-        fn           = null;
+        function reject(err) {
+            value = err;
+            state = REJECTED;
 
+            if (onRejected) {
+                handleReject(onRejected);
+            } else {
+                handleDone(onFullfilled);
+            }
+        }
+
+        function then(successCallback) {
+            returnPromise = PromiseObj();
+            handleResolve(successCallback);
+
+            return {
+                then: returnPromise.then,
+                catch: returnPromise.catch,
+                done: returnPromise.done
+            };
+        }
+
+        function done(finallyCallback) {
+            handleDone(finallyCallback);
+        }
+
+        function handleDone(fn) {
+            if (state === PENDING) {
+                onFullfilled = fn;
+            }
+
+            if (state === RESOLVED && typeof fn === 'function') {
+                return fn.call(this, value);
+            }
+
+            if (state === REJECTED) {
+                throw value;
+            }
+        }
+
+        function handleResolve(fn) {
+            if (state === PENDING) {
+                onResolved = fn;
+            }
+
+            if (state === RESOLVED) {
+                if (value && typeof value.then === 'function') {
+                    value.then(resolve);
+                    return;
+                }
+                try {
+                    value = fn.call(this, value);
+                    if (returnPromise) {
+                        returnPromise.resolve(value);
+                    }
+                } catch (err) {
+                    value = err;
+                    if (returnPromise) {
+                        returnPromise.reject(value);
+                    }
+                }
+            }
+        }
+
+        function handleReject(fn) {
+            if (state === PENDING) {
+                onRejected = fn;
+            }
+
+            if (state === REJECTED) {
+                try {
+                    value = fn.call(this, value);
+                    if (returnPromise) {
+                        returnPromise.resolve(value);
+                    }
+                } catch (err) {
+                    value = err;
+                    if (returnPromise) {
+                        returnPromise.reject(value);
+                    }
+                }
+            }
+        }
     }
 };

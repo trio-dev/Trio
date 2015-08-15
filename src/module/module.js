@@ -22,7 +22,7 @@ Module.prototype.import = function(modules) {
     var ret = {};
     var url;
 
-    _import(count.pop());
+    _import(count.pop(), vow);
 
     vow.promise.and = {};
     vow.promise.and.export = function(key, func) {
@@ -42,7 +42,7 @@ Module.prototype.import = function(modules) {
 
     return vow.promise;
 
-    function _import(key) {
+    function _import(key, promise) {
         var url = modules[key];
 
         if (typeof key !== 'string') {
@@ -69,9 +69,9 @@ Module.prototype.import = function(modules) {
                     ret[key] = data;
                     loaded++;
                     if (count.length === 0) {
-                        vow.resolve(ret);
+                        promise.resolve(ret);
                     } else {
-                        _import(count.pop());
+                        _import(count.pop(), promise);
                     }
                 });
 
@@ -81,7 +81,7 @@ Module.prototype.import = function(modules) {
 
             document.body.appendChild(script);
         } else {
-            vow.resolve(module());
+            promise.resolve(module());
         }
     }
 };
