@@ -22,99 +22,107 @@ var Vow = function() {
         var state = PENDING;
         var value, onResolved, onRejected, onFullfilled, returnPromise;
 
-        return {
-            resolve: resolve,
-            reject: reject,
-            then: then,
+        var ret = {
+
+            resolve: function (val) {
+                value = val;
+                state = RESOLVED;
+
+                if (onResolved) {
+                    handleResolve(onResolved);
+                } else {
+                    handleDone(onFullfilled);
+                }
+            },
+
+            reject: function (err) {
+                value = err;
+                state = REJECTED;
+
+                if (onRejected) {
+                    handleReject(onRejected);
+                } else {
+                    handleDone(onFullfilled);
+                }
+            },
+
+            then: function (successCallback) {
+                returnPromise = PromiseObj();
+                handleResolve(successCallback);
+
+                return {
+                    then: returnPromise.then,
+                    catch: ret.catch,
+                    done: returnPromise.done
+                };
+            },
+
             catch: function (failCallback) {
                 returnPromise = PromiseObj();
                 handleReject(failCallback);
 
                 return {
                     then: returnPromise.then,
-                    catch: returnPromise.catch,
+                    catch: ret.catch,
                     done: returnPromise.done
                 };
             },
-            done: done
+
+            done: function (finallyCallback) {
+                handleDone(finallyCallback);
+            }
         };
 
-        function resolve(val) {
-            value = val;
-            state = RESOLVED;
-
-            if (onResolved) {
-                handleResolve(onResolved);
-            } else {
-                handleDone(onFullfilled);
-            }
-        }
-
-        function reject(err) {
-            value = err;
-            state = REJECTED;
-
-            if (onRejected) {
-                handleReject(onRejected);
-            } else {
-                handleDone(onFullfilled);
-            }
-        }
-
-        function then(successCallback) {
-            returnPromise = PromiseObj();
-            handleResolve(successCallback);
-
-            return {
-                then: returnPromise.then,
-                catch: returnPromise.catch,
-                done: returnPromise.done
-            };
-        }
-
-        function done(finallyCallback) {
-            handleDone(finallyCallback);
-        }
+        return ret;
 
         function handleDone(fn) {
             if (state === PENDING) {
                 onFullfilled = fn;
+                return;
             }
 
             if (state === RESOLVED && typeof fn === 'function') {
+                state = FULFILLED;
                 return fn.call(this, value);
             }
 
             if (state === REJECTED) {
+                state = FULFILLED;
                 throw value;
             }
         }
 
         function handleResolve(fn) {
+            var error;
             if (state === PENDING) {
                 onResolved = fn;
             }
 
             if (state === RESOLVED) {
                 if (value && typeof value.then === 'function') {
-                    value.then(resolve);
+                    value.then(ret.resolve);
                     return;
                 }
+
                 try {
                     value = fn.call(this, value);
-                    if (returnPromise) {
-                        returnPromise.resolve(value);
-                    }
                 } catch (err) {
                     value = err;
-                    if (returnPromise) {
-                        returnPromise.reject(value);
+                    error = true;
+                }
+
+                if (returnPromise) {
+                    if (!error) {
+                        returnPromise.resolve(value);
+                        return;
                     }
+                    returnPromise.reject(value);
                 }
             }
         }
 
         function handleReject(fn) {
+            var error;
             if (state === PENDING) {
                 onRejected = fn;
             }
@@ -122,14 +130,23 @@ var Vow = function() {
             if (state === REJECTED) {
                 try {
                     value = fn.call(this, value);
-                    if (returnPromise) {
-                        returnPromise.resolve(value);
-                    }
                 } catch (err) {
                     value = err;
-                    if (returnPromise) {
-                        returnPromise.reject(value);
+                    error = true;
+                }
+
+                if (returnPromise) {
+                    if (!error) {
+                        returnPromise.resolve(value);
+                        return;
                     }
+                    returnPromise.reject(value);
+                }
+            }
+
+            if (state === RESOLVED) {
+                if (returnPromise) {
+                    returnPromise.resolve(value);
                 }
             }
         }
