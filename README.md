@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/chikeichan/Trio.svg?branch=dev)](https://travis-ci.org/chikeichan/Trio)
 # Trio
 
 ## Main Classes
