@@ -656,7 +656,7 @@ Stylizer.prototype.registerVariables = function(key, val) {
 
 Stylizer.prototype.getVariable = function(key) {
     if (!variables[key]) {
-        console.error('Variable ' + key + ' does not exist.');
+        void 0;
         return;
     }
     return variables[key];
@@ -693,7 +693,7 @@ Stylizer.prototype.toRGBa = function(hex, opacity) {
 
 Stylizer.prototype.getMixins = function(key) {
     if (!mixins[key]) {
-        console.error('Mixin ' + key + ' does not exist.');
+        void 0;
         return;
     }
     return mixins[key];
@@ -764,7 +764,7 @@ Module.prototype.import = function(modules) {
             script.onload = function() {
                 var defer = Vow();
 
-                console.log('Loading ' + key + '...');
+                void 0;
 
                 defer.promise.then(function(data) {
                     ret[key] = data;
