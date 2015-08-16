@@ -1,6 +1,6 @@
 {
   "name": "trio",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "",
   "main": "dist/trio.min.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chikeichan/Trio.git"
+    "url": "https://github.com/chikeichan/Trio.git#release-0.1.2"
   },
   "author": "Chi Kei Chan",
   "license": "ISC",
