@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/module/module.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../prettify.css">
+    <link rel="stylesheet" href="../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header low">
+    <h1>Code coverage report for <span class="entity">src/module/module.js</span></h1>
+    <h2>
+        Statements: <span class="metric">10.2% <small>(5 / 49)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">0% <small>(0 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">9.09% <small>(1 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">10.2% <small>(5 / 49)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">src/module/</a> &#187; module.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var moduleStore = {};
+&nbsp;
+var Module = function() {};
+&nbsp;
+Module.prototype.export = <span class="fstat-no" title="function not covered" >function(key, func) {</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof key !== 'string') {</span>
+<span class="cstat-no" title="statement not covered" >        throw new Error('Module name is not a string.');</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (typeof func !== 'function') {</span>
+<span class="cstat-no" title="statement not covered" >        throw new Error('Module is not a function.');</span>
+    }
+<span class="cstat-no" title="statement not covered" >    moduleStore[key] = <span class="fstat-no" title="function not covered" >function(done) {</span></span>
+<span class="cstat-no" title="statement not covered" >        done(func());</span>
+    };
+};
+&nbsp;
+Module.prototype.import = <span class="fstat-no" title="function not covered" >function(modules) {</span>
+<span class="cstat-no" title="statement not covered" >    var loaded = 0;</span>
+<span class="cstat-no" title="statement not covered" >    var count  = Object.keys(modules);</span>
+<span class="cstat-no" title="statement not covered" >    var vow = Vow();</span>
+<span class="cstat-no" title="statement not covered" >    var ret = {};</span>
+<span class="cstat-no" title="statement not covered" >    var url;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    _import(count.pop(), vow);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    vow.promise.and = {};</span>
+<span class="cstat-no" title="statement not covered" >    vow.promise.and.export = <span class="fstat-no" title="function not covered" >function(key, func) {</span></span>
+<span class="cstat-no" title="statement not covered" >        moduleStore[key] = <span class="fstat-no" title="function not covered" >function(done) {</span></span>
+<span class="cstat-no" title="statement not covered" >            vow.promise</span>
+                .then(<span class="fstat-no" title="function not covered" >function(ret) {</span>
+<span class="cstat-no" title="statement not covered" >                    moduleStore[key] = func.bind(this, ret);</span>
+<span class="cstat-no" title="statement not covered" >                    return func.call(this, ret);</span>
+                }.bind(this))
+                .done(done);
+        };
+    }.bind(this);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    vow.promise.and.import = <span class="fstat-no" title="function not covered" >function(modules) {</span></span>
+<span class="cstat-no" title="statement not covered" >        return vow.promise.then(this.import.bind(this, modules));</span>
+    }.bind(this);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return vow.promise;</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function _import(key, promise) {</span>
+<span class="cstat-no" title="statement not covered" >        var url = modules[key];</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (typeof key !== 'string') {</span>
+<span class="cstat-no" title="statement not covered" >            throw new Error('Module name is not a string.');</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (typeof url !== 'string') {</span>
+<span class="cstat-no" title="statement not covered" >            throw new Error('URL is not a string.');</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        var module = moduleStore[key];</span>
+        
+<span class="cstat-no" title="statement not covered" >        if (!module) {</span>
+<span class="cstat-no" title="statement not covered" >            var script = document.createElement('script');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            script.type = "text/javascript";</span>
+<span class="cstat-no" title="statement not covered" >            script.src = url;</span>
+<span class="cstat-no" title="statement not covered" >            script.onload = <span class="fstat-no" title="function not covered" >function() {</span></span>
+<span class="cstat-no" title="statement not covered" >                var defer = Vow();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                console.log('Loading ' + key + '...');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                defer.promise.then(<span class="fstat-no" title="function not covered" >function(data) {</span></span>
+<span class="cstat-no" title="statement not covered" >                    ret[key] = data;</span>
+<span class="cstat-no" title="statement not covered" >                    loaded++;</span>
+<span class="cstat-no" title="statement not covered" >                    if (count.length === 0) {</span>
+<span class="cstat-no" title="statement not covered" >                        promise.resolve(ret);</span>
+                    } else {
+<span class="cstat-no" title="statement not covered" >                        _import(count.pop(), promise);</span>
+                    }
+                });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >                script.remove();</span>
+<span class="cstat-no" title="statement not covered" >                moduleStore[key](defer.resolve);</span>
+            }.bind(this, key);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            document.body.appendChild(script);</span>
+        } else {
+<span class="cstat-no" title="statement not covered" >            promise.resolve(module());</span>
+        }
+    }
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Sun Aug 16 2015 00:37:43 GMT-0700 (PDT)</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

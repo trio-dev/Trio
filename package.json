@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/trio.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,7 @@
   "homepage": "https://github.com/chikeichan/Trio",
   "devDependencies": {
     "gulp": "^3.9.0",
+    "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
     "gulp-environments": "^0.1.0",
     "gulp-jshint": "^1.11.2",
@@ -26,6 +27,14 @@
     "gulp-strip-debug": "^1.0.2",
     "gulp-uglify": "^1.2.0",
     "gulp-wrap": "^0.11.0",
-    "jshint-stylish": "^2.0.1"
+    "jasmine": "^2.3.2",
+    "jasmine-core": "^2.3.4",
+    "jshint-stylish": "^2.0.1",
+    "karma": "^0.13.9",
+    "karma-coverage": "^0.5.0",
+    "karma-jasmine": "^0.3.6",
+    "karma-mocha-reporter": "^1.1.1",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "phantomjs": "^1.9.18"
   }
 }
