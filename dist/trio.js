@@ -1099,7 +1099,8 @@ var Trio = {
     Stylizer: new Stylizer(),
     Renderer: new Renderer(),
     Module: new Module(),
-    Resource: new Resource()
+    Resource: new Resource(),
+    VERSION: '0.1.2'
 }
 
 Trio.registerGlobalEventBus = function(id) {
