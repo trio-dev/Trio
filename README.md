@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/chikeichan/Trio.svg?branch=dev)](https://travis-ci.org/chikeichan/Trio)
+[![Coverage Status](https://coveralls.io/repos/chikeichan/Trio/badge.svg?branch=dev&service=github)](https://coveralls.io/github/chikeichan/Trio?branch=dev)
 # Trio
 
 ## Main Classes

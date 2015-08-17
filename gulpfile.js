@@ -11,7 +11,6 @@ var wrap         = require('gulp-wrap');
 var strip        = require('gulp-strip-debug');
 var environments = require('gulp-environments');
 var sourcemaps   = require('gulp-sourcemaps');
-var coveralls    = require('gulp-coveralls');
 
 // Set up environments
 var development  = environments.development;
