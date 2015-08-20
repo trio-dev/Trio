@@ -20,7 +20,8 @@ module.exports = function(config) {
             'src/renderer/*.js',
             'src/index.js',
             'spec/eventBus/eventBus.spec.js',
-            'spec/vow/vow.spec.js'
+            'spec/vow/vow.spec.js',
+            'spec/renderer/renderer.spec.js'
         ],
 
         preprocessors: {

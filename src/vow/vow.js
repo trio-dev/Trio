@@ -1,4 +1,3 @@
-/*jshint es5: true */
 var PENDING   = {},
     RESOLVED  = {},
     REJECTED  = {},
