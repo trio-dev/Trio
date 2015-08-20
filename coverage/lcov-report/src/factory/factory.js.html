@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/factory/factory.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../prettify.css">
+    <link rel="stylesheet" href="../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header low">
+    <h1>Code coverage report for <span class="entity">src/factory/factory.js</span></h1>
+    <h2>
+        Statements: <span class="metric">16.07% <small>(9 / 56)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">0% <small>(0 / 20)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">0% <small>(0 / 12)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">16.07% <small>(9 / 56)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">src/factory/</a> &#187; factory.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var Factory = {};
+var factoryIdGenerator = idGenerator('factory');
+&nbsp;
+Factory._constructor = <span class="fstat-no" title="function not covered" >function(opts) {</span>
+<span class="cstat-no" title="statement not covered" >    this._initialize(opts);</span>
+};
+&nbsp;
+Factory._constructor.prototype._initialize = <span class="fstat-no" title="function not covered" >function(opts) {</span>
+<span class="cstat-no" title="statement not covered" >    var attributes = {};</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    opts = opts || {};</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.uuid = factoryIdGenerator();</span>
+<span class="cstat-no" title="statement not covered" >    this.resources = {};</span>
+<span class="cstat-no" title="statement not covered" >    this.eventBus = opts.eventBus || new EventBus();</span>
+<span class="cstat-no" title="statement not covered" >    this.eventBus = this.eventBus.register(this.uuid);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.set = <span class="fstat-no" title="function not covered" >function(key, val) {</span></span>
+<span class="cstat-no" title="statement not covered" >        this._set(key, val, attributes);</span>
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.unset = <span class="fstat-no" title="function not covered" >function(key) {</span></span>
+<span class="cstat-no" title="statement not covered" >        this._unset(key, attributes);</span>
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.get = <span class="fstat-no" title="function not covered" >function(key) {</span></span>
+<span class="cstat-no" title="statement not covered" >        return this._get(key, attributes);</span>
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.clone = <span class="fstat-no" title="function not covered" >function() {</span></span>
+<span class="cstat-no" title="statement not covered" >        return JSON.parse(JSON.stringify(attributes));</span>
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (typeof this.initialize === 'function') {</span>
+<span class="cstat-no" title="statement not covered" >        this.initialize.apply(this, arguments);</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    this.set(defaults(opts, this.defaults));</span>
+<span class="cstat-no" title="statement not covered" >    this.eventBus.publish('initialize', this, opts);</span>
+};
+&nbsp;
+Factory._constructor.prototype._set = <span class="fstat-no" title="function not covered" >function(key, val, attributes) {</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof key === 'object' &amp;&amp; !Array.isArray(key)) {</span>
+<span class="cstat-no" title="statement not covered" >        for (var k in key) {</span>
+<span class="cstat-no" title="statement not covered" >            this._set(k, key[k], attributes);</span>
+        }
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (typeof key === 'string') {</span>
+<span class="cstat-no" title="statement not covered" >        attributes[key] = val;</span>
+<span class="cstat-no" title="statement not covered" >        var ret = {};</span>
+<span class="cstat-no" title="statement not covered" >        ret[key] = val;</span>
+<span class="cstat-no" title="statement not covered" >        this.eventBus.publish('change', this, ret);</span>
+<span class="cstat-no" title="statement not covered" >        this.eventBus.publish('change:' + key, this, val);</span>
+    }
+};
+&nbsp;
+Factory._constructor.prototype._get = <span class="fstat-no" title="function not covered" >function(key, attributes) {</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof key === 'string') {</span>
+<span class="cstat-no" title="statement not covered" >        return attributes[key];</span>
+    }  else <span class="cstat-no" title="statement not covered" >if (typeof key === 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >        return attributes;</span>
+    }
+};
+&nbsp;
+Factory._constructor.prototype._unset = <span class="fstat-no" title="function not covered" >function(key, attributes) {</span>
+<span class="cstat-no" title="statement not covered" >    if (typeof key === 'string') {</span>
+<span class="cstat-no" title="statement not covered" >        var ret = {};</span>
+<span class="cstat-no" title="statement not covered" >        ret[key] = attributes[key];</span>
+<span class="cstat-no" title="statement not covered" >        delete attributes[key];</span>
+<span class="cstat-no" title="statement not covered" >        this.eventBus.publish('delete', this, ret);</span>
+<span class="cstat-no" title="statement not covered" >        this.eventBus.publish('delete:' + key, this, ret[key]);</span>
+    } else <span class="cstat-no" title="statement not covered" >if (typeof key === 'undefined') {</span>
+<span class="cstat-no" title="statement not covered" >        for (var k in attributes) {</span>
+<span class="cstat-no" title="statement not covered" >            this._unset(k, attributes);</span>
+        }
+    }
+};
+&nbsp;
+Factory._constructor.prototype.sync = <span class="fstat-no" title="function not covered" >function(resource, id) {</span>
+<span class="cstat-no" title="statement not covered" >    this.resources[resource] = resource;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    resource.eventBus.subscribe('change:' + id, <span class="fstat-no" title="function not covered" >function(ctx, attrs) {</span></span>
+<span class="cstat-no" title="statement not covered" >        for (var k in attrs) {</span>
+<span class="cstat-no" title="statement not covered" >            this.set(k, attrs[k]);</span>
+        }
+    }.bind(this));
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    resource.eventBus.subscribe('delete:' + id, <span class="fstat-no" title="function not covered" >function(ctx, attrs) {</span></span>
+<span class="cstat-no" title="statement not covered" >        this.unset();</span>
+    }.bind(this));
+};
+&nbsp;
+Factory.extend = extend;
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Aug 19 2015 21:51:50 GMT-0700 (PDT)</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

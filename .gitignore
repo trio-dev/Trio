@@ -1,6 +1,4 @@
 **/*.DS_Store
 **/*.log
 node_modules/
-coverage/report-html/
-coverage/report-lcov/
 .coveralls.yml

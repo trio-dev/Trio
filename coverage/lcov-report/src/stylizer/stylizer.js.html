@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/stylizer/stylizer.js</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="../../prettify.css">
+    <link rel="stylesheet" href="../../base.css">
+    <style type='text/css'>
+        div.coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class="header low">
+    <h1>Code coverage report for <span class="entity">src/stylizer/stylizer.js</span></h1>
+    <h2>
+        Statements: <span class="metric">28.89% <small>(13 / 45)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Branches: <span class="metric">0% <small>(0 / 10)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Functions: <span class="metric">9.09% <small>(1 / 11)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Lines: <span class="metric">28.89% <small>(13 / 45)</small></span> &nbsp;&nbsp;&nbsp;&nbsp;
+        Ignored: <span class="metric"><span class="ignore-none">none</span></span> &nbsp;&nbsp;&nbsp;&nbsp;
+    </h2>
+    <div class="path"><a href="../../index.html">All files</a> &#187; <a href="index.html">src/stylizer/</a> &#187; stylizer.js</div>
+</div>
+<div class="body">
+<pre><table class="coverage">
+<tr><td class="line-count">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82</td><td class="line-coverage"><span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">var mixins = {};
+var variables = {};
+&nbsp;
+var Stylizer = function() {};
+&nbsp;
+Stylizer.prototype.stringify = <span class="fstat-no" title="function not covered" >function(style) {</span>
+<span class="cstat-no" title="statement not covered" >    var ret = '';</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    for (var selector in style) {</span>
+<span class="cstat-no" title="statement not covered" >        ret += selector + '{';</span>
+<span class="cstat-no" title="statement not covered" >        var properties = style[selector];</span>
+<span class="cstat-no" title="statement not covered" >        for (var prop in properties) {</span>
+<span class="cstat-no" title="statement not covered" >            var setting = properties[prop];</span>
+<span class="cstat-no" title="statement not covered" >            ret += prop + ':' + setting + ';';</span>
+        }
+<span class="cstat-no" title="statement not covered" >        ret = ret.slice(0, ret.length - 1);</span>
+<span class="cstat-no" title="statement not covered" >        ret += '}';</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return ret;</span>
+};
+&nbsp;
+Stylizer.prototype.createStyleTag = <span class="fstat-no" title="function not covered" >function(style) {</span>
+<span class="cstat-no" title="statement not covered" >    var tag = document.createElement('style');</span>
+<span class="cstat-no" title="statement not covered" >    style = this.stringify(style);</span>
+<span class="cstat-no" title="statement not covered" >    tag.innerText = style;</span>
+<span class="cstat-no" title="statement not covered" >    return tag;</span>
+};
+&nbsp;
+Stylizer.prototype.registerMixins = <span class="fstat-no" title="function not covered" >function(key, func) {</span>
+<span class="cstat-no" title="statement not covered" >    mixins[key] = func;</span>
+};
+&nbsp;
+Stylizer.prototype.registerVariables = <span class="fstat-no" title="function not covered" >function(key, val) {</span>
+<span class="cstat-no" title="statement not covered" >    variables[key] = val;</span>
+};
+&nbsp;
+Stylizer.prototype.getVariable = <span class="fstat-no" title="function not covered" >function(key) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!variables[key]) {</span>
+<span class="cstat-no" title="statement not covered" >        console.error('Variable ' + key + ' does not exist.');</span>
+<span class="cstat-no" title="statement not covered" >        return;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return variables[key];</span>
+};
+&nbsp;
+Stylizer.prototype.toHex = <span class="fstat-no" title="function not covered" >function(rgb) {</span>
+<span class="cstat-no" title="statement not covered" >    rgb = rgb.replace(' ', '').split(',');</span>
+<span class="cstat-no" title="statement not covered" >    return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);</span>
+&nbsp;
+<span class="fstat-no" title="function not covered" >    function componentToHex(c) {</span>
+<span class="cstat-no" title="statement not covered" >        var hex = c.toString(16);</span>
+<span class="cstat-no" title="statement not covered" >        return hex.length == 1 ? "0" + hex : hex;</span>
+    }
+};
+&nbsp;
+Stylizer.prototype.toRGB = <span class="fstat-no" title="function not covered" >function(hex) {</span>
+<span class="cstat-no" title="statement not covered" >    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);</span>
+<span class="cstat-no" title="statement not covered" >    return result ? 'rgb(' + [</span>
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ].join(',') + ')' : null;
+};
+&nbsp;
+Stylizer.prototype.toRGBa = <span class="fstat-no" title="function not covered" >function(hex, opacity) {</span>
+<span class="cstat-no" title="statement not covered" >    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);</span>
+<span class="cstat-no" title="statement not covered" >    return result ? 'rgba(' + [</span>
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16),
+        opacity
+    ].join(',') + ')' : null;
+};
+&nbsp;
+Stylizer.prototype.getMixins = <span class="fstat-no" title="function not covered" >function(key) {</span>
+<span class="cstat-no" title="statement not covered" >    if (!mixins[key]) {</span>
+<span class="cstat-no" title="statement not covered" >        console.error('Mixin ' + key + ' does not exist.');</span>
+<span class="cstat-no" title="statement not covered" >        return;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return mixins[key];</span>
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+
+</div>
+<div class="footer">
+    <div class="meta">Generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Wed Aug 19 2015 21:51:50 GMT-0700 (PDT)</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>
