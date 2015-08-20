@@ -19,7 +19,8 @@ module.exports = function(config) {
             'src/resource/*.js',
             'src/renderer/*.js',
             'src/index.js',
-            'spec/eventBus/eventBus.spec.js'
+            'spec/eventBus/eventBus.spec.js',
+            'spec/vow/vow.spec.js'
         ],
 
         preprocessors: {
@@ -34,8 +35,7 @@ module.exports = function(config) {
             dir : 'coverage/',
             reporters: [
                 // reporters not supporting the `file` property
-                { type: 'html', subdir: 'report-html' },
-                { type: 'lcov', subdir: 'report-lcov' },
+                { type: 'lcov', subdir: '.' },
                 { type: 'text-summary', subdir: '.'},
                 { type: 'text', subdir: '.'}
             ]
