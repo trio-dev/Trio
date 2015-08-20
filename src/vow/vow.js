@@ -30,7 +30,7 @@ var Vow = function() {
 
                 if (onResolved) {
                     handleResolve(onResolved);
-                } else {
+                } else if (onFullfilled) {
                     handleDone(onFullfilled);
                 }
             },
@@ -41,7 +41,7 @@ var Vow = function() {
 
                 if (onRejected) {
                     handleReject(onRejected);
-                } else {
+                } else if (onFullfilled) {
                     handleDone(onFullfilled);
                 }
             },
@@ -52,7 +52,7 @@ var Vow = function() {
 
                 return {
                     then: returnPromise.then,
-                    catch: ret.catch,
+                    catch: returnPromise.catch,
                     done: returnPromise.done
                 };
             },
@@ -63,7 +63,7 @@ var Vow = function() {
 
                 return {
                     then: returnPromise.then,
-                    catch: ret.catch,
+                    catch: returnPromise.catch,
                     done: returnPromise.done
                 };
             },
@@ -77,7 +77,7 @@ var Vow = function() {
 
         function handleDone(fn) {
             if (state === PENDING) {
-                onFullfilled = fn;
+                onFullfilled = fn || 'done';
                 return;
             }
 

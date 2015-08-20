@@ -32,5 +32,37 @@ describe('Vow', function() {
                 return n;
             }
         });
+
+        it('would swallow errors', function() {
+            var d = vow.promise;
+
+            d.then(function() { throw new Error('test'); });
+
+            expect(vow.resolve).not.toThrow();
+        });
+
+        it('should catch error from previous thenable and continue promises execution', function() {
+            var d = vow.promise;
+            var error = null;
+            var ans = null;
+
+            d.then(function() { throw new Error('test'); })
+             .catch(function(err) { error = err; return 1; })
+             .then(function(d) { ans = d; });
+
+            vow.resolve();
+
+            expect(ans).toBe(1);
+            expect(error.message).toBe('test');
+        });
+
+        it('should throw unhandled error on done', function() {
+            var d = vow.promise;
+
+            d.then(function() { throw new Error('test'); })
+             .done();
+
+            expect(vow.resolve).toThrow();
+        });
     });
 });
