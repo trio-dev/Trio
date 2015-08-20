@@ -5,7 +5,7 @@
   "main": "dist/trio.min.js",
   "scripts": {
     "test": "gulp test",
-    "coverage": "cat ./coverage/report-lcov/lcov.info"
+    "coverage": "cat ./coverage/lcov.info"
   },
   "repository": {
     "type": "git",
