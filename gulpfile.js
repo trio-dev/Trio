@@ -11,6 +11,7 @@ var wrap         = require('gulp-wrap');
 var strip        = require('gulp-strip-debug');
 var environments = require('gulp-environments');
 var sourcemaps   = require('gulp-sourcemaps');
+var coveralls = require('gulp-coveralls');
 
 // Set up environments
 var development  = environments.development;
@@ -45,6 +46,12 @@ gulp.task('runTest', function (done) {
  * Run test once and exit
  */
 gulp.task('test', ['lint', 'runTest']);
+
+//Coveralls
+gulp.task('coveralls', function() {
+    gulp.src('coverage/lcov.info')
+      .pipe(coveralls());
+});
 
 // Watch Files For Changes
 gulp.task('watch', function() {
