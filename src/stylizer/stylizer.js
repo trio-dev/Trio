@@ -48,7 +48,7 @@ Stylizer.prototype.toHex = function(rgb) {
     return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
 
     function componentToHex(c) {
-        var hex = c.toString(16);
+        var hex = (+c).toString(16);
         return hex.length == 1 ? "0" + hex : hex;
     }
 };

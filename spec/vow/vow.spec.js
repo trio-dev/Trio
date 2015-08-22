@@ -41,6 +41,19 @@ describe('Vow', function() {
             expect(vow.resolve).not.toThrow();
         });
 
+        xit('should handle reject with catch', function() {
+            var d = vow.promise;
+            var error = null;
+            var ans = null;
+
+            d.then(function() { ans = 'then'})
+             .catch(function(err) { ans = err; })
+
+            vow.reject('catch');
+
+            expect(ans).toBe('catch');
+        });
+
         it('should catch error from previous thenable and continue promises execution', function() {
             var d = vow.promise;
             var error = null;
