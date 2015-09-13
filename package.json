@@ -41,7 +41,7 @@
     "karma-mocha-reporter": "^1.1.1",
     "karma-phantomjs-launcher": "^0.2.1",
     "npm": "^2.14.2",
-    "phantomjs": "^2.0.0",
+    "phantomjs": "1.9.18",
     "promises-aplus-tests-phantom": "^2.1.0"
   }
 }
