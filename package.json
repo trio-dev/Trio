@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/chikeichan/Trio",
   "devDependencies": {
+    "browserify": "^11.0.1",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
@@ -29,14 +30,18 @@
     "gulp-strip-debug": "^1.0.2",
     "gulp-uglify": "^1.2.0",
     "gulp-wrap": "^0.11.0",
+    "i": "^0.3.3",
     "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
     "jshint-stylish": "^2.0.1",
     "karma": "^0.13.9",
+    "karma-browserify": "^4.3.0",
     "karma-coverage": "^0.5.0",
     "karma-jasmine": "^0.3.6",
     "karma-mocha-reporter": "^1.1.1",
     "karma-phantomjs-launcher": "^0.2.1",
-    "phantomjs": "^1.9.18"
+    "npm": "^2.14.2",
+    "phantomjs": "1.9.18",
+    "promises-aplus-tests-phantom": "^2.1.0"
   }
 }

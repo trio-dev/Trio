@@ -3,3 +3,5 @@
 node_modules/
 coverage/lcov-report/
 .coveralls.yml
+.idea
+coverage/lcov.info
