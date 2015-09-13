@@ -83,7 +83,7 @@ describe('Vow', function() {
         });
     });
 
-    describe('Promises-A+-Tests', function() {
+    xdescribe('Promises-A+-Tests', function() {
         promiseTests.mocha(vow);
     });
 });
