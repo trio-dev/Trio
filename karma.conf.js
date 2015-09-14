@@ -9,6 +9,7 @@ module.exports = function(config) {
         files: [
             'spec/beforeSpec.js',
             'src/helpers/*.js',
+            'src/polyfills/*.js',
             'src/vow/*.js',
             'src/eventBus/*.js',
             'src/factory/*.js',
@@ -22,7 +23,8 @@ module.exports = function(config) {
             'spec/eventBus/eventBus.spec.js',
             'spec/vow/vow.spec.js',
             'spec/renderer/renderer.spec.js',
-            'spec/stylizer/stylizer.spec.js'
+            'spec/stylizer/stylizer.spec.js',
+            'spec/component/component.spec.js'
         ],
 
         preprocessors: {

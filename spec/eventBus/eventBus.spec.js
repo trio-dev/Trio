@@ -1,4 +1,4 @@
-describe('The EventBus Class', function(done) {
+describe('The EventBus Class', function() {
     describe('One EventBus', function() {
         var e, eb, 
             handler = jasmine.createSpy('handler'), 

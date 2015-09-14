@@ -19,7 +19,19 @@ var production   = environments.production;
 
 // Lint Task
 gulp.task('lint', function() {
-    return gulp.src('src/*/*.js')
+    return gulp.src([
+            'src/helpers/*.js',
+            'src/vow/*.js',
+            'src/eventBus/*.js',
+            'src/factory/*.js',
+            'src/service/*.js',
+            'src/component/*.js',
+            'src/stylizer/*.js',
+            'src/module/*.js',
+            'src/resource/*.js',
+            'src/renderer/*.js',
+            'src/index.js'
+        ])
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(jshint.reporter('fail'));
@@ -66,6 +78,7 @@ gulp.task('default', ['lint', 'scripts']);
 function devScript() {
     return gulp.src([
             'src/helpers/*.js',
+            'src/polyfills/*.js',
             'src/vow/*.js',
             'src/eventBus/*.js',
             'src/factory/*.js',
@@ -90,6 +103,7 @@ function devScript() {
 function prodSrcipt() {
     return gulp.src([
             'src/helpers/*.js',
+            'src/polyfills/*.js',
             'src/vow/*.js',
             'src/eventBus/*.js',
             'src/factory/*.js',
