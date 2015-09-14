@@ -56,9 +56,9 @@ function setupTestElement() {
         tagName: 'test-container',
         fragment: frag,
         style: style,
-        events: {
-            'click .spinner': 'clickSpinner'
-        },
+        // events: {
+        //     'click .spinner': 'clickSpinner'
+        // },
         onCreate: function() {
             this.spinner = this.shadowRoot.querySelector('.spinner');
         },

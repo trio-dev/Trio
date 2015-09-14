@@ -1,4 +1,4 @@
-var gEventBus = new EventBus();;
+var gEventBus = new EventBus();
 
 var Trio = {
     Factory: Factory,
@@ -10,7 +10,7 @@ var Trio = {
     Module: new Module(),
     Resource: new Resource(),
     VERSION: '0.1.2'
-}
+};
 
 Trio.registerGlobalEventBus = function(id) {
     return gEventBus.register(id);
