@@ -1,5 +1,3 @@
-var promiseTests = require("promises-aplus-tests-phantom");
-
 describe('Vow', function() {
     var vow = Vow();
     
@@ -81,9 +79,5 @@ describe('Vow', function() {
 
             expect(vow.resolve).toThrow();
         });
-    });
-
-    xdescribe('Promises-A+-Tests', function() {
-        promiseTests.mocha(vow);
     });
 });
