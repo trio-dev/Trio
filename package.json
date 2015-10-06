@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/chikeichan/Trio",
   "devDependencies": {
-    "browserify": "^11.0.1",
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
@@ -41,7 +40,6 @@
     "karma-mocha-reporter": "^1.1.1",
     "karma-phantomjs-launcher": "^0.2.1",
     "npm": "^2.14.2",
-    "phantomjs": "1.9.18",
-    "promises-aplus-tests-phantom": "^2.1.0"
+    "phantomjs": "1.9.18"
   }
 }

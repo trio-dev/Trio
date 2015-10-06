@@ -2,7 +2,7 @@ module.exports = function(config) {
     config.set({
         browsers: ['PhantomJS'],
 
-        frameworks: ['browserify', 'jasmine'],
+        frameworks: ['jasmine'],
 
         reporters: ['mocha', 'coverage'],
 
@@ -28,9 +28,6 @@ module.exports = function(config) {
         ],
 
         preprocessors: {
-            //files to be processed via browserify
-            'spec/vow/vow.spec.js' : ['browserify'],
-
             // source files, that you wanna generate coverage for
             // do not include tests or libraries
             // (these files will be instrumented by Istanbul)
