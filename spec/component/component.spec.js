@@ -44,9 +44,9 @@ function setupTestElement() {
     
     tmpl = Trio.Renderer.createTemplate();
 
-    tmpl.create('div.pie-wrapper')
-        .create('div.spinner').addClass('pie').append()
-    .appendLast()
+    tmpl.open('div.pie-wrapper')
+        .open('div.spinner').addClass('pie').close()
+    .close()
 
     frag = tmpl.render();
 
