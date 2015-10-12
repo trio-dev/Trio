@@ -19,7 +19,6 @@ Template.prototype.addClass     = queueCommand('addClass');
 Template.prototype.text         = queueCommand('text');
 Template.prototype.attr         = queueCommand('attribute');
 Template.prototype.style        = queueCommand('style');
-Template.prototype.removeClass  = queueCommand('removeClass');
 Template.prototype.close        = queueCommand('closeTag');
 Template.prototype.if           = queueCommand('if');
 Template.prototype.else         = queueCommand('else');
@@ -44,14 +43,14 @@ function queueCommand(commandName) {
 
 Template.prototype.render = function(data) {
     // Root element to store DOMs
-    var root   = document.createDocumentFragment(),
+    var root            = document.createDocumentFragment(),
     // Stacks to reference current context
-        elements = [],
-        conditionals = [],
-        loops = [],
-        states = [],
+        elements        = [],
+        conditionals    = [],
+        loops           = [],
+        states          = [],
     // Reference index for current execution
-        execIndex = 0,
+        execIndex       = 0,
         el, condition, loop;
 
     handleCommand.call(this, this._queue[execIndex], data);
@@ -78,7 +77,7 @@ Template.prototype.render = function(data) {
         handleStateActions();
 
         // Exit if condition is not met
-        if (state === 'CONDITIONAL' && !getLastFrom(conditionals)) {
+        if ((state === 'CONDITIONAL' && !getLastFrom(conditionals)) || (state === 'LOOP' && !execData)) {
             handleCommand.call(this, this._queue[++execIndex], execData);
             return;
         }
@@ -86,7 +85,6 @@ Template.prototype.render = function(data) {
         // Handle CREATE, APPEND, STYLE, ATTR, TEXT
         // These methods are purely rendering and do not change rendering state
         handleCommonActions();
-
 
         // Increment index for next execution
         execIndex++;
@@ -164,10 +162,6 @@ Template.prototype.render = function(data) {
                     el = getLastFrom(elements);
                     addClass.apply(el, [evaluate(execData, command.detail[0])]);
                     break;
-                case 'removeClass':
-                    el = getLastFrom(elements);
-                    removeClass.apply(el, [evaluate(execData, command.detail[0])]);
-                    break;
                 case 'style':
                     el = getLastFrom(elements);
                     addStyle.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
@@ -194,6 +188,132 @@ Template.prototype.render = function(data) {
 };
 
 //////////////////////////////////////////////////////
+/////////////////////// Patch ////////////////////////
+//////////////////////////////////////////////////////
+
+Template.prototype.patch = function(root, data) {
+    var frag = this.render(data);
+
+    dfPatch(root, frag);
+
+    function dfPatch(from, to) {
+        var fromNode, toNode;
+        var length = Math.max(from.childNodes.length, to.childNodes.length);
+
+        for (var i = 0; i < length; i++) {
+            fromNode = from.childNodes[i];
+            toNode   = to.childNodes[i];
+
+            if (!toNode && fromNode) {
+                removeAllAfter(from, i);
+                return;
+            } else if (!fromNode && toNode) {
+                from.appendChild(toNode.cloneNode(true));
+            } else if (fromNode.tagName !== toNode.tagName) {
+                from.replaceChild(toNode.cloneNode(true), fromNode);
+            } else {
+                patchNode(fromNode, toNode);
+                dfPatch(fromNode, toNode);
+            }
+        }
+    }
+
+    function removeAllAfter(node, index) {
+        for (var i = node.childNodes.length - 1; i >= index; i--) {
+            node.childNodes[i].remove();
+        }
+    }
+
+    function patchNode(from, to) {
+        patchClass(from, to);
+        patchStyle(from, to);
+        patchAttributes(from, to);
+        patchText(from, to);
+    }
+
+    function patchClass(from, to) {
+        var map;
+        var toClasses   = to && to.className ? to.className.split(' ') : [];
+        var fromClasses = from && from.className ? from.className.split(' ') : [];
+        
+        map = toClasses.reduce(function(accumulator, cls) {
+            if (cls === '') {
+                return accumulator;
+            }
+            addClass.call(from, cls);
+            accumulator[cls] = cls;
+            return accumulator;
+        }, {});
+
+        fromClasses.forEach(function(cls) {
+            if (!map[cls]) {
+                removeClass.call(from, cls);
+            }
+        });
+    }
+
+    function patchText(from, to) {
+        if (from.textContent !== to.textContent) {
+            from.textContent = to.textContent;
+        }
+    }
+
+    function patchStyle(from, to) {
+        var map = {};
+        var styleKey, styleVal, fromKeys;
+
+        if (to.style) {
+            for (var i = 0; i < to.style.length; i++) {
+                styleKey = to.style[i];
+                styleVal = to.style[to.style[i]];
+                addStyle.call(from, styleKey, styleVal);
+                map[styleKey] = styleVal;
+            }
+        }
+
+        if (from.style) {
+            fromKeys = Array.prototype.slice.call(from.style);
+            for (var j = 0; j < fromKeys.length; j++) {
+                styleKey = fromKeys[j];
+                if (!map[styleKey]) {
+                    addStyle.call(from, styleKey, '');
+                }
+            }
+        }
+    }
+
+    function patchAttributes(from, to) {
+        var map = {};
+        var attr, attrKey, attrVal, fromKeys;
+
+        if (to.attributes) {
+            for (var i = 0; i < to.attributes.length; i++) {
+                attr = to.attributes[i];
+                attrKey = attr.name;
+                if (attrKey !== 'style' && attrKey !== 'class') {
+                    from.setAttribute(attrKey, attr.value);
+                    map[attrKey] = attr.value;                 
+                }
+            }
+        }
+
+        if (from.attributes) {
+            fromKeys = Array.prototype.slice.call(from.attributes);
+            for (var j = 0; j < fromKeys.length; j++) {
+                attr = fromKeys[j];
+                attrKey = attr.name;
+                if (attrKey !== 'style' && attrKey !== 'class') {
+                    if (!map[attrKey]) {
+                        from.setAttribute(attrKey, '');
+                    }
+                }
+            }
+        }
+    }
+
+};
+
+//////////////////////////////////////////////////////
 /////////////////// Helper Methods ///////////////////
 //////////////////////////////////////////////////////
 
@@ -212,6 +332,7 @@ function createTag(tag) {
 
 function addClass(className) {
     var separator = this.className.length > 0 ? ' ' : '';
+    className = typeof className === 'string' ? className : '';
 
     if (!hasClass(this, className)) {
         this.className += separator + className;
@@ -219,17 +340,21 @@ function addClass(className) {
 }
 
 function removeClass(className) {
-    if (hasClass(this,className)) {
-        this.className = this.className.replace(new RegExp('(\\s|^)'+className+'(\\s|$)'), ' ');
+    if (hasClass(this, className)) {
+        var old = this.className;
+        var out = old.replace(new RegExp('(\\s|^)'+className+'(\\s|$)'), '');
+        this.className = out;
     }
 }
 
 function addStyle(attr, val) {
-    this.style[attr] = val;
+    if (this.style[attr] !== val) {
+        this.style[attr] = val;
+    }
 }
 
 function addAttribute(attr, val) {
-    this.setAttribute(attr, val);
+    this.setAttribute(attr, typeof val === 'undefined' ? '' : val);
 }
 
 function addText(content) {
@@ -254,9 +379,8 @@ function evaluate(data, funcOrVal) {
     switch (typeof funcOrVal) {
         case 'function':
             return funcOrVal.call(this, data);
-        case 'string':
+        default:
             return funcOrVal;
-        case 'object':
-            return funcOrVal;
+
     }
 }
