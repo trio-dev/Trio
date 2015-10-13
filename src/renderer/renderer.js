@@ -5,216 +5,239 @@ Renderer.prototype.createTemplate = function() {
 };
 
 var Template = function(){
-    this._currentState = [];
     this._queue = [];
-    this._conditional = undefined;
-    this._state = undefined;
-    this._loop = undefined;
-    this._start = undefined;
-
 };
 
-/**
- * Create DOM node
- * @param  {string} tagName Element name
- * @return {instance}       this
- */
-Template.prototype.create = function(tagName){
-    tagName = parseTag(tagName);
-    var fn = function() {
-        var el = document.createElement(tagName[0]);
-        if (tagName[1] === '.') {
-            el.className = tagName[2];
-        } else if (tagName[1] === '#') {
-            el.id = tagName[2];
-        }
-        this._currentState.push(el);
-    }.bind(this);
-    this._queue.push({
-        type: 'open',
-        fn: fn
-    });
-    return this;
-};
+//////////////////////////////////////////////////////
+/////////////// DOM Templating methods ///////////////
+//////////////////////////////////////////////////////
 
-Template.prototype.addClass = function(className) {
-    var fn = function(d) {
-        var el = grabLast.call(this);
-        className = evaluate(d, className);
-        var separator = el.className.length > 0 ? ' ' : '';
-        if (!hasClass(el,className)) {
-            el.className += separator + className;
-        }
-    }.bind(this);
-    this._queue.push({
-        type: 'addClass',
-        fn: fn
-    });
-    return this;
-};
+// Each of the methods below push a command object to a command queue.
+// The command queue will be executed by .render to create DOM fragments.
+Template.prototype.open         = queueCommand('openTag');
+Template.prototype.addClass     = queueCommand('addClass');
+Template.prototype.text         = queueCommand('text');
+Template.prototype.attr         = queueCommand('attribute');
+Template.prototype.style        = queueCommand('style');
+Template.prototype.removeClass  = queueCommand('removeClass');
+Template.prototype.close        = queueCommand('closeTag');
+Template.prototype.if           = queueCommand('if');
+Template.prototype.else         = queueCommand('else');
+Template.prototype.each         = queueCommand('loop');
+Template.prototype.done         = queueCommand('done');
+Template.prototype.xif          = Template.prototype.done; 
+Template.prototype.xeach        = Template.prototype.done;
 
-Template.prototype.text = function(content) {
-    var fn = function(d) {
-        var el = grabLast.call(this);
-        el.textContent = evaluate(d, content);
-    }.bind(this);
-    this._queue.push({
-        type: 'text',
-        fn: fn
-    });
-    return this;
-};
+function queueCommand(commandName) {
+    return function() {
+        this._queue.push({
+            action: commandName,
+            detail: Array.prototype.slice.call(arguments)
+        });
+        return this;
+    };
+}
 
-Template.prototype.attr = function(attr, val) {
-    var fn = function(d) {
-        var el = grabLast.call(this);
-        el.setAttribute(evaluate(d, attr), evaluate(d, val));
-    }.bind(this);
-    this._queue.push({
-        type: 'attr',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.style = function(attr, val) {
-    var fn = function(d) {
-        var el = grabLast.call(this);
-        el.style[evaluate(d, attr)] = evaluate(d, val);
-    }.bind(this);
-    this._queue.push({
-        type: 'style',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.removeClass = function(className) {
-    var fn = function(d) {
-        var el = grabLast.call(this);
-        className = evaluate(d, className);
-        if (hasClass(el,className)) {
-            var reg = new RegExp('(\\s|^)'+className+'(\\s|$)');
-            el.className = el.className.replace(reg,' ');
-        }
-    }.bind(this);
-    this._queue.push({
-        type: 'removeClass',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.append = function() {
-    var fn = function(d) {
-        var el = this._currentState.pop();
-        if (this._currentState.length === 0) {
-            this.previousFragment.appendChild(el);
-        } else {
-            var parent = grabLast.call(this);
-            parent.appendChild(el);
-        }
-    }.bind(this);
-    this._queue.push({
-        type: 'close',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.appendLast = function() {
-  var fn = function(d) {
-      var el = this._currentState.pop();
-      this.previousFragment.appendChild(el);
-  }.bind(this);
-  this._queue.push({
-      type: 'end',
-      fn: fn
-  });
-  return this;  
-};
-
-Template.prototype.if = function(funcOrKey) {
-    var fn = function(d) {
-        this._state = 'conditional';
-        funcOrKey = evaluate(d, funcOrKey);
-        this._conditional = !!funcOrKey;
-    }.bind(this);
-    this._queue.push({
-        type: 'if',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.else = function() {
-    var fn = function(d) {
-        this._conditional = !this._conditional;
-    }.bind(this);
-    this._queue.push({
-        type: 'else',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.each = function(funcOrKey) {
-    var fn = function(d, i) {
-        this._loop  = evaluate(d, funcOrKey);
-        this._state = 'loop';
-        this._start = i;
-    }.bind(this);
-    this._queue.push({
-        type: 'each',
-        fn: fn
-    });
-    return this;
-};
-
-Template.prototype.done = function() {
-    var fn = function(d, i) {
-        this._conditional = undefined;
-        this._state       = undefined;
-    }.bind(this);
-    this._queue.push({
-        type: 'done',
-        fn: fn
-    });
-    return this;
-};
+//////////////////////////////////////////////////////
+/////////////////////// Render ///////////////////////
+//////////////////////////////////////////////////////
 
 Template.prototype.render = function(data) {
-    this.previousFragment = document.createDocumentFragment();
-    this._queue.forEach(function(q, i) {
-        switch (this._state) {
-            case 'conditional':
-                if (this._conditional || q.type === 'else' || q.type === 'done') {
-                    q.fn(data, i);
-                }
-                break;
-            case 'loop':
-                if (q.type === 'done') {
-                    this._loop.forEach(function(l, j) {
-                        for (var start = this._start + 1; start < i; start++) {
-                            var loopFn = this._queue[start];
-                            loopFn.fn(l, j);
-                        }
-                    }.bind(this));
-                    q.fn(data, i);
-                }
-                break;
-            default:
-                q.fn(data, i);
-                break;
-                
-        }
-    }.bind(this));
+    // Root element to store DOMs
+    var root   = document.createDocumentFragment(),
+    // Stacks to reference current context
+        elements = [],
+        conditionals = [],
+        loops = [],
+        states = [],
+    // Reference index for current execution
+        execIndex = 0,
+        el, condition, loop;
 
-    return this.previousFragment;
+    handleCommand.call(this, this._queue[execIndex], data);
+
+    return root;
+
+    function handleCommand(command, execData) {
+        // Grab current state: LOOP, CONDITIONAL, or undefined
+        var state = getLastFrom(states);
+
+        // Base case: exit if no command
+        if (!command) {
+            return;
+        }
+
+        // Change data in current execuation if in a loop
+        // From [{a: 'a'}, {b: 'b'}, {c: 'c'}] to {a: 'a'}
+        if (state === 'LOOP') {
+            setDataContext();
+        }
+
+        // Handle IF, ELSE, EACH, or DONE
+        // These methods change state of rendering
+        handleStateActions();
+
+        // Exit if condition is not met
+        if (state === 'CONDITIONAL' && !getLastFrom(conditionals)) {
+            handleCommand.call(this, this._queue[++execIndex], execData);
+            return;
+        }
+
+        // Handle CREATE, APPEND, STYLE, ATTR, TEXT
+        // These methods are purely rendering and do not change rendering state
+        handleCommonActions();
+
+
+        // Increment index for next execution
+        execIndex++;
+
+        // Execute next command
+        handleCommand.call(this, this._queue[execIndex], execData);
+        
+        function setDataContext() {
+            loop = getLastFrom(loops);
+            execData = loop.data[loop.index];
+        }
+
+        function handleStateActions() {
+            if (command.action === 'loop') {
+                handleLoop();
+            }
+
+            if (command.action === 'done') {
+                handleDone();
+            }
+            
+            if (command.action === 'if') {
+                handleIf();
+            }
+
+            if (command.action === 'else') {
+                handleElse();
+            }
+        }
+
+        function handleLoop() {
+            states.push('LOOP');
+            loops.push({
+                data: evaluate(execData, command.detail[0]),
+                index: 0,
+                start: execIndex
+            });
+        }
+
+        function handleDone() {
+            states.pop();
+            if (state === 'CONDITIONAL') {
+                conditionals.pop();
+            } else if (state === 'LOOP') {
+                loop = getLastFrom(loops);
+                loop.index = loop.index + 1;
+                // If current loop is not done, set state back to loop
+                // and set next execution at start of loop
+                if (loop.index < loop.data.length) {
+                    execIndex = loop.start;
+                    states.push('LOOP');
+                } else {
+                    loops.pop();
+                }
+            }
+        }
+
+        function handleIf() {
+            states.push('CONDITIONAL');
+            condition = evaluate(execData, command.detail[0]);
+            conditionals.push(condition);
+        }
+
+        function handleElse() {
+            condition = !conditionals.pop();
+            conditionals.push(condition);
+        }
+
+        function handleCommonActions() {
+            switch (command.action) {
+                case 'openTag':
+                    elements.push(createTag.apply(null, command.detail));
+                    break;
+                case 'addClass':
+                    el = getLastFrom(elements);
+                    addClass.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'removeClass':
+                    el = getLastFrom(elements);
+                    removeClass.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'style':
+                    el = getLastFrom(elements);
+                    addStyle.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'attribute':
+                    el = getLastFrom(elements);
+                    addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'text':
+                    el = getLastFrom(elements);
+                    addText.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'closeTag':
+                    el = elements.pop();
+                    if (elements.length === 0) {
+                        root.appendChild(el);
+                    } else {
+                        getLastFrom(elements).appendChild(el);
+                    }
+                    break;
+            }
+        }
+    }
 };
 
-function grabLast() {
-    return this._currentState[this._currentState.length - 1];
+//////////////////////////////////////////////////////
+/////////////////// Helper Methods ///////////////////
+//////////////////////////////////////////////////////
+
+function createTag(tag) {
+    var tagName = parseTag(tag);
+    var el      = document.createElement(tagName[0]);
+
+    if (tagName[1] === '.') {
+        el.className = tagName[2];
+    } else if (tagName[1] === '#') {
+        el.id = tagName[2];
+    }
+
+    return el;
+}
+
+function addClass(className) {
+    var separator = this.className.length > 0 ? ' ' : '';
+
+    if (!hasClass(this, className)) {
+        this.className += separator + className;
+    }
+}
+
+function removeClass(className) {
+    if (hasClass(this,className)) {
+        this.className = this.className.replace(new RegExp('(\\s|^)'+className+'(\\s|$)'), ' ');
+    }
+}
+
+function addStyle(attr, val) {
+    this.style[attr] = val;
+}
+
+function addAttribute(attr, val) {
+    this.setAttribute(attr, val);
+}
+
+function addText(content) {
+    this.textContent = content;
+}
+
+function getLastFrom(array) {
+    return array[array.length - 1];
 }
 
 function hasClass(el, className) {
@@ -227,11 +250,13 @@ function parseTag(tag) {
     return tag;
 }
 
-function evaluate(data, funcOrString) {
-    switch (typeof funcOrString) {
+function evaluate(data, funcOrVal) {
+    switch (typeof funcOrVal) {
         case 'function':
-            return funcOrString.apply(this, arguments);
+            return funcOrVal.call(this, data);
         case 'string':
-            return funcOrString;
+            return funcOrVal;
+        case 'object':
+            return funcOrVal;
     }
 }
