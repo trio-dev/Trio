@@ -19,21 +19,34 @@ describe('Stylizer', function() {
 
     it('should stringify style object', function() {
         var ans = s.stringify(style);
-        expect(ans).toBe('div{background-color:black;opacity:0.8;display:flex;width:100px;height:100px}span{position:absolute}');
+        expect(ans).toBe('div{background-color:black;opacity:0.8;display:flex;display:-webkit-flex;display:-moz-flex;display:-ms-flex;display:-o-flex;width:100px;height:100px}span{position:absolute}');
     });
+
+    it('should autoprefix when stringifying', function() {
+        var ans = s.stringify({
+            'div.test': {
+                'display': 'flex',
+                'transform': 'rotate(0deg)',
+                'trasition': 'linear 2s',
+                'width': 'calc(100% - 4px)'
+            }
+        });
+        expect(ans).toBe('div.test{display:flex;display:-webkit-flex;display:-moz-flex;display:-ms-flex;display:-o-flex;transform:rotate(0deg);-webkit-transform:rotate(0deg);-moz-transform:rotate(0deg);-ms-transform:rotate(0deg);-o-transform:rotate(0deg);trasition:linear 2s;width:calc(100% - 4px);width:-webkit-calc(100% - 4px);width:-moz-calc(100% - 4px);width:-ms-calc(100% - 4px);width:-o-calc(100% - 4px)}');
+
+    })
 
     it('should create style tag element', function() {
         var el = s.createStyleTag(style);
-        expect(el.outerHTML).toBe('<style>div{background-color:black;opacity:0.8;display:flex;width:100px;height:100px}span{position:absolute}</style>');
+        expect(el.outerHTML).toBe('<style>div{background-color:black;opacity:0.8;display:flex;display:-webkit-flex;display:-moz-flex;display:-ms-flex;display:-o-flex;width:100px;height:100px}span{position:absolute}</style>');
     });
 
     it('should register variable', function() {
         var ans;
-        s.registerVariables('baseColor', 'black');
+        s.registerVariable('baseColor', 'black');
         ans = s.getVariable('baseColor');
         expect(ans).toBe('black');
 
-        s.registerVariables('baseStyle', style);
+        s.registerVariable('baseStyle', style);
         ans = s.getVariable('baseStyle');
         expect(ans).toBe(style);
     });
@@ -43,8 +56,8 @@ describe('Stylizer', function() {
         var mixin = function(n) {
             return n + 'px';
         }
-        s.registerMixins('baseLength', mixin);
-        ans = s.getMixins('baseLength');
+        s.registerMixin('baseLength', mixin);
+        ans = s.getMixin('baseLength');
         expect(ans).toBe(mixin);
     });
 
