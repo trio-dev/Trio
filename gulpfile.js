@@ -22,7 +22,7 @@ gulp.task('lint', function() {
     return gulp.src([
             'src/helpers/*.js',
             'src/vow/*.js',
-            'src/eventBus/*.js',
+            'src/signal/*.js',
             'src/factory/*.js',
             'src/service/*.js',
             'src/component/*.js',
