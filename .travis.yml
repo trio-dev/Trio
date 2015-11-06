@@ -8,3 +8,4 @@ before_script:
   - sudo rm -rf /usr/local/phantomjs/bin/phantomjs
   - sudo mv phantomjs /usr/local/phantomjs/bin/phantomjs
 script: gulp test
+sudo: required
