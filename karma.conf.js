@@ -24,7 +24,8 @@ module.exports = function(config) {
             'spec/vow/vow.spec.js',
             'spec/renderer/renderer.spec.js',
             'spec/stylizer/stylizer.spec.js',
-            'spec/component/component.spec.js'
+            'spec/component/component.spec.js',
+            'spec/service/service.spec.js'
         ],
 
         preprocessors: {

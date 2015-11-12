@@ -9,7 +9,6 @@ var Signal = function(uuid, origin) {
     this.uuid             = uuid;
     SIGNALS_STORAGE[uuid] = this;
     origin.on             = this.on.bind(this);
-    origin.onAny          = this.onAny.bind(this);
     origin.off            = this.off.bind(this);
     origin.emit           = this.emit.bind(this);
     origin.broadcast      = this.broadcast.bind(this);
@@ -19,6 +18,11 @@ var Signal = function(uuid, origin) {
 };
 
 Signal.prototype.on = function(pulseType, func) {
+    if (typeof pulseType === 'function') {
+        this.handleAll = pulseType;
+        return;
+    }
+
     if (!this.storage[pulseType]) {
         this.storage[pulseType] = [];
     }
@@ -28,14 +32,6 @@ Signal.prototype.on = function(pulseType, func) {
     }
     
     this.storage[pulseType].push(func);
-};
-
-Signal.prototype.onAny = function(func) {
-    if (typeof func !== 'function') {
-        throw new Error('Expect parameter to be function but get ' + typeof func);
-    }
-
-    this.handleAll = func;
 };
 
 Signal.prototype.off = function(pulseType, func) {
@@ -50,10 +46,13 @@ Signal.prototype.off = function(pulseType, func) {
 };
 
 Signal.prototype.emit = function(pulseType, detail) {
-    var pulse = MakePulse(pulseType, detail, this.origin),
-        connector;
+    var pulse, connector;
 
-    this.trigger(pulse);
+    if (typeof pulseType === 'object' && pulseType.type) {
+        pulse = pulseType;
+    } else if (typeof pulseType === 'string') {
+        pulse = MakePulse(pulseType, detail, this.origin);
+    }
 
     for (var id in this.connectors) {
         connector = this.connectors[id];
@@ -72,6 +71,10 @@ Signal.prototype.broadcast = function(pulseType, detail) {
 };
 
 Signal.prototype.trigger = function(pulse) {
+    if (!pulse.type) {
+        throw new Error('Expect parameter to be a pulse');
+    }
+
     var bucket = this.storage[pulse.type] || [];
     for (var i = 0; i < bucket.length; i++) {
         bucket[i](pulse);
@@ -86,6 +89,9 @@ Signal.prototype.reset = function(name) {
         this.storage[name] = [];
     } else {
         this.storage = {};
+        for (var connectorId in this.connectors) {
+            this.disconnect(connectorId);
+        }
     }
 };
 

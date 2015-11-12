@@ -3,22 +3,38 @@ var serviceIdGenerator = idGenerator('service');
 var Service = {};
 
 Service._constructor = function(opts) {
-    this._initialize(opts);
-};
-
-Service._constructor.prototype._initialize = function(opts) {
     this.uuid = serviceIdGenerator();
-
-    if (typeof this.initialize === 'function') {
-        this.initialize.apply(this, arguments);
-    }
+    new Signal(this.uuid, this);
+    this.onReady(opts);
 };
 
-Service._constructor.prototype.subscribeAll = function(target, events) {
-    for (var evt in events) {
-        var handler = events[evt];
-        var fn = this[handler] = this[handler].bind(this);
-        target.eventBus.subscribe(evt, fn);
+Service._constructor.prototype.onReady = function() {
+    // To be implemented by instance
+};
+
+Service._constructor.prototype.onStart = function() {
+    // To be implemented by instance
+};
+
+Service._constructor.prototype.onStop = function() {
+    // To be implemented by instance
+};
+
+Service._constructor.prototype.start = function(opts) {
+    this.onStart(opts);
+    this.on(this.emit.bind(this));
+};
+
+Service._constructor.prototype.stop = function(opts) {
+    this.onStop(opts);
+    this.reset();
+};
+
+Service._constructor.prototype.implement = function(inst) {
+    if (inst && inst.uuid) {
+        this.connect(inst.uuid);
+    } else {
+        throw new Error('Expect parameter to contains property uuid.');
     }
 };
 
