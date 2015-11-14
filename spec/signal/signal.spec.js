@@ -20,65 +20,28 @@ describe('The Signal Class', function() {
             expect(typeof instance1.reset).toBe('function');
         });
 
-        it('should be able to listen to event', function() {
+        it('should not respond own event', function() {
             var args    = {foo: 'bar'};
             instance1.on('test', handler);
             instance1.on('test', handler2);
             instance1.emit('test', args);
 
-            expect(handler).toHaveBeenCalledWith({
-                type: 'test',
-                detail: args,
-                origin: instance1
-            });
-            expect(handler2).toHaveBeenCalledWith({
-                type: 'test',
-                detail: args,
-                origin: instance1
-            });
+            expect(handler).not.toHaveBeenCalled();
+            expect(handler2).not.toHaveBeenCalled();
         });
 
-        it('should be able set onAny handler', function() {
+        it('should not invoke fallback handler', function() {
             var args    = {foo: 'bar'};
-            instance1.onAny(handler);
+            instance1.on(handler);
             instance1.emit('test', args);
 
-            expect(handler).toHaveBeenCalledWith({
-                type: 'test',
-                detail: args,
-                origin: instance1
-            });
+            expect(handler).not.toHaveBeenCalled();
         });
 
         it('should throw an error when trying to listen without callback', function() {
             expect(instance1.on.bind(this, 'test')).toThrow();
         });
 
-        it('should be able to off an event', function() {
-            instance1.on('test', handler);
-            instance1.off('test', handler);
-            instance1.emit('test', null);
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should be able to reset event', function() {
-            instance1.on('test', handler);
-            instance1.on('test', handler2);
-            instance1.on('test2', handler);
-            instance1.on('test3', handler2);
-
-            instance1.reset('test');
-            instance1.emit('test', null);
-
-            expect(handler).not.toHaveBeenCalled();
-
-            instance1.reset();
-            instance1.emit('test2', null);
-            instance1.emit('test3', null);
-            expect(handler).not.toHaveBeenCalled();
-            expect(handler2).not.toHaveBeenCalled();
-        });
     });
 
     describe('Multiple Signal', function() {
@@ -114,6 +77,42 @@ describe('The Signal Class', function() {
                 detail: null,
                 origin: instance1
             });
+        });
+
+        it('should be able to off an event', function() {
+            instance1.connect('instance2');
+            instance2.on('test', handler);
+            instance1.emit('test', null);
+
+            expect(handler).toHaveBeenCalledWith({
+                type: 'test',
+                detail: null,
+                origin: instance1
+            });
+
+            handler.calls.reset();
+            instance2.off('test', handler);
+            instance1.emit('test', null);
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should be able to reset event', function() {
+            instance1.connect('instance2');
+            instance2.on('test', handler);
+            instance2.on('test2', handler);
+            instance2.on('test3', handler2);
+
+            instance2.reset('test');
+            instance1.emit('test', null);
+
+            expect(handler).not.toHaveBeenCalled();
+
+            instance2.reset();
+            instance1.emit('test2', null);
+            instance1.emit('test3', null);
+            expect(handler).not.toHaveBeenCalled();
+            expect(handler2).not.toHaveBeenCalled();
         });
 
         it('should not listen to pulse from disconnected signal', function() {
