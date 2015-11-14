@@ -1,31 +1,64 @@
-function ajax(opts) {
-    var xhr = new XMLHttpRequest();
-    var vow = Vow();
+var GLOBAL_AJAX_REQUEST_INTERCEPT = function(req) { 
+    return req;
+};
+var GLOBAL_AJAX_RESPONSE_INTERCEPT = function(res) {
+    return res;
+};
 
-    if (opts.encode) {
-        opts.url += encodeURI(opts.encode(opts.payload));
-    }
-
-    xhr.open(opts.type.toUpperCase(), opts.url);
-    xhr.setRequestHeader('Content-Type', opts.contentType);
-
-    for (var header in opts.headers) {
-        xhr.setRequestHeader(header, opts.headers[header]);
-    }
-
-    xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status <= 299) {
-            vow.resolve(xhr.responseText);
-        } else {
-            vow.reject(xhr.responseText);
-        }
+var Ajax = function(opts) {
+    var xhr        = new XMLHttpRequest();
+    xhr.onload  = function() {
+        var response = GLOBAL_AJAX_RESPONSE_INTERCEPT(xhr);
+        opts.onload(response);
     };
 
-    if (opts.encode) {
-        xhr.send();
-    } else {
-        xhr.send(JSON.stringify(opts.payload));
+    this.url     = opts.url;
+    this.type    = opts.type.toUpperCase();
+    this.headers = {};
+    this.xhr     = xhr;
+    GLOBAL_AJAX_REQUEST_INTERCEPT(this);
+};
+
+Ajax.prototype.setUrl = function(url) {
+    if (!url) throw new Error('Expect parameter: url.');
+    this.url = url;
+};
+
+Ajax.prototype.setType = function(type) {
+    if (!type) throw new Error('Expect parameter: type.');
+    this.type = type.toUpperCase();
+};
+
+Ajax.prototype.setHeader = function(key, value) {
+    this.headers[key] = value;
+};
+
+Ajax.prototype.encodeUrlParam = function(param) {
+    var encodedString = '';
+    for (var prop in param) {
+        if (param.hasOwnProperty(prop)) {
+            if (encodedString.length > 0) {
+                encodedString += '&';
+            }
+            encodedString += encodeURI(prop + '=' + param[prop]);
+        }
+    }
+    return encodedString;
+};
+
+Ajax.prototype.send = function(payload) {
+    if (!this.url) throw new Error('Expect request to contain property: url.');
+    if (!this.type) throw new Error('Expect request to contain property: type.');
+
+    this.xhr.open(this.type, this.url);
+
+    for (var header in this.headers) {
+        this.xhr.setRequestHeader(header, this.headers[header]);
     }
 
-    return vow.promise;
-}
+    if (payload) {
+        this.xhr.send(payload);
+    } else {
+        this.xhr.send();
+    }
+};

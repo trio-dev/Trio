@@ -1,63 +1,44 @@
-var Data = Factory.extend({
-    ajax: function(opts){
-        if (!opts.url) throw new Error('Url is required.');
-        if (!opts.type) throw new Error('Request type is required.');
+// Gloabl Resources Storage
+var RESOURCE_STORE = {};
 
-        opts.contentType = opts.contentType || 'application/json';
-        opts.encode      = opts.encode || null;
-        opts.payload     = opts.payload || null;
-        opts.indexBy     = opts.indexBy || 'id';
+//////////////////////////////////////////////
+/////////// Resource Manager Class ///////////
+//////////////////////////////////////////////
+var ResourceManager = function() {};
 
-        return ajax(opts)
-                .then(_parse.bind(this))
-                .then(_updateStore.bind(this));
-
-        function _updateStore(rsp) {
-            if (opts.type.toUpperCase() === 'DELETE') {
-                if (Array.isArray(rsp)) {
-                    rsp.forEach(function(d) {
-                        this.unset(d[opts.indexBy], d);
-                    }.bind(this));
-                } else if (typeof rsp === 'object') {
-                    this.unset(rsp[opts.indexBy], rsp);
-                }
-            } else {
-                if (Array.isArray(rsp)) {
-                    rsp.forEach(function(d) {
-                        this.set(d[opts.indexBy], d);
-                    }.bind(this));
-                } else if (typeof rsp === 'object') {
-                    this.set(rsp[opts.indexBy], rsp);
-                }
-            }
-            return rsp;
-        }
-
-        function _parse(rsp) {
-            if (opts.parse) {
-                return opts.parse(rsp);
-            } 
-            return this.parse(rsp);
-        }
-    },
-
-    parse: function(rsp) {
-        return JSON.parse(rsp);
-    }
-});
-
-var datastore = {};
-var Resource = function() {};
-
-Resource.prototype.register = function(name) {
-    if (datastore[name]) {
-        throw new Error('Resource ' + name + ' already exist.');
-    }
-
-    datastore[name] = new Data();
-    return datastore[name];
+ResourceManager.prototype.register = function(opts) {
+    if (!opts.name) throw new Error('Expect parameter to have property: name.');
+    var Res = Resource.extend(opts);
+    RESOURCE_STORE[opts.name] = new Res();
 };
 
-Resource.prototype.get = function(name) {
-    return datastore[name] ? datastore[name] : this.register(name);
+ResourceManager.prototype.get = function(name) {
+    var resource = RESOURCE_STORE[name];
+    if (!resource) throw new Error('Resource ' + name + ' not found.');
+    return resource;
 };
+
+//////////////////////////////////////
+/////////// Resource Class ///////////
+//////////////////////////////////////
+var Resource = {};
+
+Resource._constructor = function() {};
+
+// Decorated 
+Resource._constructor.prototype.sendRequest = function (opts, callback) {
+    var request = new Ajax({
+        type: opts.type,
+        url: opts.url,
+        onload: function(response) {
+            callback(this.interceptResponse(response));
+        }.bind(this)
+    });
+
+    this.interceptRequest(request);
+    request.send(opts.payload);
+};
+
+Resource._constructor.prototype.interceptResponse = function(res) { return res; };
+Resource._constructor.prototype.interceptRequest = function(req) { return req; };
+Resource.extend = extend;
