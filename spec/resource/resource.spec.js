@@ -58,28 +58,28 @@ describe('The Resource Class', function() {
 
         it('should be able to set and get from cache', function() {
             var resource = Trio.Resource.get('testCache');
-            resource.cache.set('one', 1);
-            resource.cache.set('two', 2);
-            resource.cache.set('three', 3);
-            expect(resource.cache.get('one')).toBe(1);
-            expect(resource.cache.get('two')).toBe(2);
-            expect(resource.cache.get('three')).toBe(3);
+            resource.set('one', 1);
+            resource.set('two', 2);
+            resource.set('three', 3);
+            expect(resource.get('one')).toBe(1);
+            expect(resource.get('two')).toBe(2);
+            expect(resource.get('three')).toBe(3);
         });
 
         it('should remove one from cache when exceed max size', function() {
             var resource = Trio.Resource.get('testCache');
-            resource.cache.set('one', 1);
-            resource.cache.set('two', 2);
-            resource.cache.set('three', 3);
-            resource.cache.set('four', 4);
-            resource.cache.set('five', 5);
-            resource.cache.set('six', 6);
-            expect(resource.cache.get('one')).toBe(null);
-            expect(resource.cache.get('two')).toBe(2);
-            expect(resource.cache.get('three')).toBe(3);
-            expect(resource.cache.get('four')).toBe(4);
-            expect(resource.cache.get('five')).toBe(5);
-            expect(resource.cache.get('six')).toBe(6);
+            resource.set('one', 1);
+            resource.set('two', 2);
+            resource.set('three', 3);
+            resource.set('four', 4);
+            resource.set('five', 5);
+            resource.set('six', 6);
+            expect(resource.get('one')).toBe(null);
+            expect(resource.get('two')).toBe(2);
+            expect(resource.get('three')).toBe(3);
+            expect(resource.get('four')).toBe(4);
+            expect(resource.get('five')).toBe(5);
+            expect(resource.get('six')).toBe(6);
         });
     });
 
@@ -99,7 +99,7 @@ describe('The Resource Class', function() {
             name: 'useTest',
             cacheSize: 2,
             fetchUser: function(firstName, callback) {
-                var cache = this.cache.get(firstName);
+                var cache = this.get(firstName);
 
                 if (cache) {
                     callback(cache);
@@ -111,7 +111,7 @@ describe('The Resource Class', function() {
                     url: 'https://api.parse.com/1/classes/players?' + encode(firstName)
                 }, function(res) {
                     var player = res.results[0];
-                    this.cache.set(player.firstName, player);
+                    this.set(player.firstName, player);
                     callback(player);
                 }.bind(this))
 

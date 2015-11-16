@@ -1,3 +1,5 @@
+var resourceIdGenerator = idGenerator('resource');
+
 // Gloabl Resources Storage
 var RESOURCE_STORE = {};
 
@@ -24,7 +26,12 @@ ResourceManager.prototype.get = function(name) {
 var Resource = {};
 
 Resource._constructor = function(opts) {
-    this.cache = new LruCache(opts.cacheSize);
+    var cache = new LruCache(opts.cacheSize);
+    this.uuid = resourceIdGenerator();
+    new Signal(this.uuid, this);
+
+    this.set = cache.set.bind(this);
+    this.get = cache.get.bind(this);
 };
 
 // Decorated ajax function
@@ -55,6 +62,10 @@ Resource._constructor.prototype.encodeUrlParam = function(param) {
         }
     }
     return encodedString;
+};
+
+Resource._constructor.prototype.hasBeenUpdated = function(key) {
+    this.emit('update:' + this.uuid, null);
 };
 
 Resource.extend = extend;
