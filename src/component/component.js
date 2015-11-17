@@ -1,29 +1,66 @@
 var componentIdGenerator = idGenerator('component');
-var componentsStore = {};
+var COMPONENT_STORE = {};
 var Component = {};
 
 Component.register = function(opts) {
-    if (componentsStore[opts.tagName]) {
-        return componentsStore[opts.tagName];
+    if (COMPONENT_STORE[opts.tagName]) {
+        return COMPONENT_STORE[opts.tagName];
     }
-
-    var param = {};
 
     // Set Prototype of custom element
     var proto = Object.create(HTMLElement.prototype);
 
-    _extendPrototype.call(proto, opts);
-
     proto.createdCallback = function() {
-        var shadow = this.createShadowRoot();
-        var signal;
-        shadow.appendChild(opts.fragment.cloneNode(true));
-
-        this.uuid = componentIdGenerator();
-        signal = new Signal(this.uuid, this);
+        var tmpl   = opts.template || {};
+        var shadow, trio;
         
+        if (!tmpl.render || !tmpl.patch) {
+            throw new Error('Trio.Template instance not found.');
+        }
+
+        shadow = this.createShadowRoot();
+        shadow.appendChild(opts.template.render());
+
+        // Create trio object to store trio context
+        trio = {
+            uuid: componentIdGenerator(),
+            render: tmpl.render.bind(tmpl),
+            patch: function(data) {
+                tmpl.patch(shadow, data);
+            }
+        };
+
+        new Signal(trio.uuid, trio);
+        trio = _extend(trio, opts);
+
+        this.trio = trio;
+
         if (opts.onCreate) {
             opts.onCreate.apply(this, arguments);
+        }
+
+        function _extend(obj, extendedObject) {
+            var blacklist = {
+                onChange: true,
+                onAttach: true,
+                onDetach: true,
+                onCreate: true,
+                uuid: true,
+                on: true,
+                off: true,
+                emit: true,
+                connect: true,
+                broadcast: true,
+                disconnect: true,
+                reset: true
+            };
+
+            for (var key in extendedObject) {
+                if (!blacklist[key]) {
+                    obj[key] = extendedObject[key];
+                }
+            }
+            return obj;
         }
     };
 
@@ -31,7 +68,6 @@ Component.register = function(opts) {
         if (opts.onAttach) {
             opts.onAttach.apply(this, arguments);
         }
-        _addEventListeners.call(this, opts.events);
     };
 
     proto.detachedCallback = function() {
@@ -40,102 +76,16 @@ Component.register = function(opts) {
         }
     };
 
-    proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
-        if (opts.onAttributesChange) {
-            opts.onAttributesChange[attrName].apply(this, [oldVal, newVal]);
+    proto.attributeChangedCallback = function() {
+        if (opts.onChange) {
+            opts.onChange.apply(this, arguments);
         }
     };
-
-    param.prototype = proto;
-
-    // Set base element (Optional)
-    if (opts.extends) {
-        param.extends = opts.extends;
-    }
 
     // Register custom element
-    componentsStore[opts.tagName] = document.registerElement(opts.tagName, param);
-    return componentsStore[opts.tagName];
+    COMPONENT_STORE[opts.tagName] = document.registerElement(opts.tagName, {
+        prototype: proto
+    });
+
+    return COMPONENT_STORE[opts.tagName];
 };
-
-Component.extend = function(baseComponent, opts) {
-    var Base = componentsStore[baseComponent];
-    var param = {};
-    // Set Prototype of custom element
-    var proto = Object.create(HTMLElement.prototype);
-
-    _extendPrototype.call(proto, opts);
-
-    proto.createdCallback = function() {
-        Base.prototype.createdCallback.apply(this, arguments);
-        if (opts.onCreate) {
-            opts.onCreate.apply(this, arguments);
-        }
-    };
-
-    proto.attachedCallback = function() {
-        Base.prototype.attachedCallback.apply(this, arguments);
-        if (opts.onAttach) {
-            opts.onAttach.apply(this, arguments);
-        }
-        _addEventListeners.call(this, opts.events);
-    };
-
-    proto.detachedCallback = function() {
-        Base.prototype.detachedCallback.apply(this, arguments);
-        if (opts.onDetach) {
-            opts.onDetach.apply(this, arguments);
-        }
-    };
-
-    proto.attributeChangedCallback = function(attrName, oldVal, newVal) {
-        Base.prototype.attributeChangedCallback.apply(this, arguments);
-        if (opts.onAttributesChange) {
-            opts.onAttributesChange[attrName].apply(this, [oldVal, newVal]);
-        }
-    };
-
-    param.prototype = proto;
-
-    // Register custom element
-    return document.registerElement(opts.tagName, param);
-};
-
-function _addEventListeners(events) {
-    for (var evt in events) {
-        var param = evt.split(' ');
-        var eventName = param[0];
-        var element = this.shadowRoot.querySelector(param[1]);
-        var handler = events[evt];
-        var fn = this[handler] = this[handler].bind(this);
-        
-        element.addEventListener(eventName, fn);
-    }
-}
-
-function _extendPrototype(protos) {
-    for (var proto in protos) {
-        switch (proto) {
-            case 'exends':
-                break;
-            case 'onCreate':
-                break;
-            case 'onDetach':
-                break;
-            case 'onAttributesChange':
-                break;
-            case 'onAttach':
-                break;
-            case 'tagName':
-                break;
-            case 'fragment':
-                break;
-            case 'style':
-                break;
-            case 'events':
-                break;
-            default:
-                this[proto] = protos[proto];
-        }
-    }
-}
