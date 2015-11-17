@@ -21,10 +21,7 @@ Component.register = function(opts) {
 
         this.uuid = componentIdGenerator();
         signal = new Signal(this.uuid, this);
-
-        if (opts.style) {
-            shadow.appendChild(opts.style.cloneNode(true));
-        }
+        
         if (opts.onCreate) {
             opts.onCreate.apply(this, arguments);
         }
