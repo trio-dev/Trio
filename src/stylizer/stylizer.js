@@ -22,10 +22,71 @@ var COLOR_MAP = {
 
 var Stylizer = function() {};
 
-Stylizer.prototype.stringify = function(style) {
+Stylizer.prototype.create = function() {
+    return new CSSTemplate();
+};
+
+Stylizer.prototype.registerMixin = function(key, func) {
+    mixins[key] = func;
+};
+
+Stylizer.prototype.registerVariable = function(key, val) {
+    variables[key] = val;
+};
+
+Stylizer.prototype.getVariable = function(key) {
+    if (!variables[key]) {
+        console.error('Variable ' + key + ' does not exist.');
+        return;
+    }
+    return variables[key];
+};
+
+Stylizer.prototype.getMixin = function(key) {
+    if (!mixins[key]) {
+        console.error('Mixin ' + key + ' does not exist.');
+        return;
+    }
+    return mixins[key];
+};
+
+var CSSTemplate = function() {
+    this.style = {};
+    this._context = null;
+};
+
+CSSTemplate.prototype.select = function(selector) {
+    if (!this.style[selector]) {
+        this.style[selector] = {};
+    }
+    this._context = this.style[selector];
+    return this;
+};
+
+CSSTemplate.prototype.css = function(key, attr) {
+    if (!this._context) {
+        throw new Error('CSS Selector not present.');
+    }
+
+    if (typeof key === 'string') {
+        addOneStyle(key, attr, this._context);
+    } else if (typeof key === 'object') {
+        for (var k in key) {
+            addOneStyle(k, key[k], this._context);
+        }
+    }
+
+    return this;
+
+    function addOneStyle(key, attr, obj) {
+        obj[key] = attr;
+    }
+};
+
+CSSTemplate.prototype.toCSS = function() {
     var ret = '';
 
-    for (var selector in style) {
+    for (var selector in this.style) {
         // Error for when style is not a two-layers object
         // Example:
         // cssSelector : {
@@ -35,7 +96,7 @@ Stylizer.prototype.stringify = function(style) {
             throw new Error('Invalid Style Object');
         }
         ret += selector + '{';
-        var properties = style[selector];
+        var properties = this.style[selector];
         for (var prop in properties) {
             var setting = properties[prop];
                 setting = replaceVariable.call(this, setting);
@@ -84,7 +145,7 @@ Stylizer.prototype.stringify = function(style) {
         if (variables) {
             for (var i = 0; i < variables.length; i++) {
                 key = variables[i].slice(1);
-                val = this.getVariable(key);
+                val = Stylizer.prototype.getVariable.call(this, key);
                 setting = setting.replace(variables[i], val);
             }
         }
@@ -98,7 +159,7 @@ Stylizer.prototype.stringify = function(style) {
 
         if (colors) {
             key = colors[0].slice(1);
-            val = this.getVariable(key);
+            val = Stylizer.prototype.getVariable.call(this, key);
             val = toRGB(val);
             rgb = rgb.replace(colors[0], val);
         }
@@ -132,32 +193,7 @@ Stylizer.prototype.stringify = function(style) {
     }
 };
 
-
-Stylizer.prototype.createStyleTag = function(style) {
-    var tag = document.createElement('style');
-    style = this.stringify(style);
-    tag.innerText = style;
-    return tag;
-};
-
-
-Stylizer.prototype.registerMixin = function(key, func) {
-    mixins[key] = func;
-};
-
-Stylizer.prototype.registerVariable = function(key, val) {
-    variables[key] = val;
-};
-
-Stylizer.prototype.getVariable = function(key) {
-    if (!variables[key]) {
-        console.error('Variable ' + key + ' does not exist.');
-        return;
-    }
-    return variables[key];
-};
-
-Stylizer.prototype.toHex = function(rgb) {
+CSSTemplate.prototype.toHex = function(rgb) {
     rgb = rgb.replace(' ', '').split(',');
     return "#" + componentToHex(rgb[0]) + componentToHex(rgb[1]) + componentToHex(rgb[2]);
 
@@ -165,13 +201,4 @@ Stylizer.prototype.toHex = function(rgb) {
         var hex = (+c).toString(16);
         return hex.length == 1 ? "0" + hex : hex;
     }
-};
-
-
-Stylizer.prototype.getMixin = function(key) {
-    if (!mixins[key]) {
-        console.error('Mixin ' + key + ' does not exist.');
-        return;
-    }
-    return mixins[key];
 };

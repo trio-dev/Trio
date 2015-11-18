@@ -9,6 +9,7 @@ describe('The Component Class', function() {
         var el = document.createElement('test-container');
         document.body.appendChild(el);
         expect(el.outerHTML).toBe('<test-container></test-container>');
+        expect(el.shadowRoot.innerHTML).toBe('<style>div.test{display:block}</style><div class="pie-wrapper"><div class="spinner pie"></div></div>');
     });
 
     it('should invoke onCreate on element create', function() {
@@ -40,22 +41,22 @@ describe('The Component Class', function() {
 });
 
 function setupTestElement() {
-    var styleOpts = {};
-    
     tmpl = Trio.Renderer.createTemplate();
+    style = Trio.Stylizer.create();
+    style.select('div.test')
+            .css('display', 'block');
 
-    tmpl.open('div.pie-wrapper')
-        .open('div.spinner').addClass('pie').close()
-    .close()
+    tmpl.open('style').text(style.toCSS.bind(style)).close()
+        .open('div.pie-wrapper')
+            .open('div.spinner').addClass('pie').close()
+        .close()
 
     frag = tmpl.render();
 
-    style = Trio.Stylizer.createStyleTag(styleOpts);
 
     c = Component.register({
         tagName: 'test-container',
         fragment: frag,
-        style: style,
         // events: {
         //     'click .spinner': 'clickSpinner'
         // },
