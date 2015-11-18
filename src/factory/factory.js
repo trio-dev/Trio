@@ -2,93 +2,31 @@ var Factory = {};
 var factoryIdGenerator = idGenerator('factory');
 
 Factory._constructor = function(opts) {
-    this._initialize(opts);
+    this.attributes = {};
+    this.uuid       = factoryIdGenerator();
+    this.resources  = {};
+    new Signal(this.uuid, this);
+
+    this.initialize(opts);
 };
 
-Factory._constructor.prototype._initialize = function(opts) {
-    var attributes = {};
+Factory._constructor.prototype.initialize = function() {};
 
-    opts = opts || {};
+/**
+ * Sync factory with resourceName, and connect with resource's signal.
+ * Map callback will be invoked with the resource object passed in on first sync, 
+ * and every time resource is updated.
+ */
+Factory._constructor.prototype.sync = function(resourceName, map) {
+    var resource = RESOURCE_STORE[resourceName];
 
-    this.uuid = factoryIdGenerator();
-    this.resources = {};
+    if (!resource) throw new Error('Resource ' + resourceName + ' does not exist.');
 
-    Signal(this.uuid, this);
+    this.resources[resourceName] = resource;
+    this.connect(resource.uuid);
+    map.call(this, resource);
+    this.on('update:' + resource.uuid, map.bind(this, resource));
 
-    this.set = function(key, val) {
-        this._set(key, val, attributes);
-    };
-
-    this.unset = function(key) {
-        this._unset(key, attributes);
-    };
-
-    this.get = function(key) {
-        return this._get(key, attributes);
-    };
-
-    this.clone = function() {
-        return JSON.parse(JSON.stringify(attributes));
-    };
-
-    if (typeof this.initialize === 'function') {
-        this.initialize.apply(this, arguments);
-    }
-
-    this.set(defaults(opts, this.defaults));
-    this.eventBus.publish('initialize', this, opts);
-};
-
-Factory._constructor.prototype._set = function(key, val, attributes) {
-    if (typeof key === 'object' && !Array.isArray(key)) {
-        for (var k in key) {
-            this._set(k, key[k], attributes);
-        }
-    }
-
-    if (typeof key === 'string') {
-        attributes[key] = val;
-        var ret = {};
-        ret[key] = val;
-        this.eventBus.publish('change', this, ret);
-        this.eventBus.publish('change:' + key, this, val);
-    }
-};
-
-Factory._constructor.prototype._get = function(key, attributes) {
-    if (typeof key === 'string') {
-        return attributes[key];
-    }  else if (typeof key === 'undefined') {
-        return attributes;
-    }
-};
-
-Factory._constructor.prototype._unset = function(key, attributes) {
-    if (typeof key === 'string') {
-        var ret = {};
-        ret[key] = attributes[key];
-        delete attributes[key];
-        this.eventBus.publish('delete', this, ret);
-        this.eventBus.publish('delete:' + key, this, ret[key]);
-    } else if (typeof key === 'undefined') {
-        for (var k in attributes) {
-            this._unset(k, attributes);
-        }
-    }
-};
-
-Factory._constructor.prototype.sync = function(resource, id) {
-    this.resources[resource] = resource;
-
-    resource.eventBus.subscribe('change:' + id, function(ctx, attrs) {
-        for (var k in attrs) {
-            this.set(k, attrs[k]);
-        }
-    }.bind(this));
-
-    resource.eventBus.subscribe('delete:' + id, function(ctx, attrs) {
-        this.unset();
-    }.bind(this));
 };
 
 Factory.extend = extend;

@@ -26,7 +26,8 @@ module.exports = function(config) {
             'spec/stylizer/stylizer.spec.js',
             'spec/component/component.spec.js',
             'spec/service/service.spec.js',
-            'spec/resource/resource.spec.js'
+            'spec/resource/resource.spec.js',
+            'spec/factory/factory.spec.js'
         ],
 
         preprocessors: {
