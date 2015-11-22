@@ -49,13 +49,17 @@ Component.prototype.getData = function(dataKey) {
  */
 Component.prototype.render = function(data) {
     var dataKey, html;
+    var temp = document.createElement('div');
+
     if (data) {
         dataKey = this.setData(data);
         html = '<' + this.tagName + ' data-key="' + dataKey + '"></' + this.tagName + '>';
     } else {
         html = '<' + this.tagName + '></' + this.tagName + '>';
     }
-    return html;
+
+    temp.innerHTML = html;
+    return temp.querySelector(this.tagName);
 };
 
 /**

@@ -275,14 +275,14 @@ describe('The Renderer Class', function() {
                 cName: 'test2'
             });
 
-            expect(el.innerHTML).toBe('<div id="parent" class="test2"></div>');
+            expect(el.innerHTML).toBe('<div id="parent" class=" test2"></div>');
 
             t.patch(el, {
                 name: 'Jacky Chan',
                 cName: 'test2'
             });
 
-            expect(el.innerHTML).toBe('<div id="parent" class="test2">Jacky Chan</div>');
+            expect(el.innerHTML).toBe('<div id="parent" class=" test2">Jacky Chan</div>');
         });
 
         it("should patch style", function() {
@@ -310,14 +310,14 @@ describe('The Renderer Class', function() {
                 height: '20px'
             });
 
-            expect(el.innerHTML).toBe('<div id="parent" class="" style="background-color: white; height: 20px;"></div>');
+            expect(el.innerHTML).toBe('<div id="parent" class=" " style="background-color: white; height: 20px;"></div>');
 
             t.patch(el, {
                 name: 'Jacky Chan',
                 cName: 'test2'
             });
 
-            expect(el.innerHTML).toBe('<div id="parent" class="test2" style="">Jacky Chan</div>');
+            expect(el.innerHTML).toBe('<div id="parent" class=" test2" style="">Jacky Chan</div>');
         });
 
         it("should patch attributes", function() {
@@ -344,14 +344,14 @@ describe('The Renderer Class', function() {
                 isDisabled: false
             });
 
-            expect(el.innerHTML).toBe('<div id="parent" class="" disabled="false" style=""></div>');
+            expect(el.innerHTML).toBe('<div id="parent" class=" " disabled="false" style=""></div>');
 
             t.patch(el, {
                 name: 'Jacky Chan',
                 cName: 'test2'
             });
 
-            expect(el.innerHTML).toBe('<div id="parent" class="test2" disabled="" style="">Jacky Chan</div>');
+            expect(el.innerHTML).toBe('<div id="parent" class=" test2" disabled="" style="">Jacky Chan</div>');
         });
 
         it("should patch conditionals", function() {
@@ -512,7 +512,7 @@ describe('The Renderer Class', function() {
 
             expect(el.innerHTML).toBe(html);
 
-            html = '<div id="social-post" class="">' +
+            html = '<div id="social-post" class=" ">' +
                         '<div class="info">' +
                             '<div class="first-name">Chi Kei</div>' +
                             '<div class="last-name">Chan</div>' +
@@ -540,7 +540,7 @@ describe('The Renderer Class', function() {
 
             expect(el.innerHTML).toBe(html);
 
-            html = '<div id="social-post" class="">' +
+            html = '<div id="social-post" class=" ">' +
                         '<div class="info">' +
                             '<div class="first-name">Chancellor</div>' +
                             '<div class="last-name"></div>' +
