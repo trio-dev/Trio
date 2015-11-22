@@ -1,7 +1,7 @@
 describe('The Component Class', function() {
-    var c, frag, style, tmpl;
+    var c, html, host, style, tmpl, el;
 
-    beforeEach(function() {
+    beforeEach(function(done) {
         style = Trio.Stylizer.create();
         style.select('div.pie-wrapper')
                 .css('background-color', 'black')
@@ -16,73 +16,70 @@ describe('The Component Class', function() {
             .close();
 
 
-        c = Component.register({
+        c = Trio.Component.register({
             tagName: 'test-container',
             template: tmpl,
             onChange: function(attr, oldVal, newVal){
-                this.trio[attr] = newVal;
+                this.testAttribute = newVal;
             },
             onAttach: function(){
-                this.trio.patch({
-                    content: 'test',
-                    className: 'test-test'
-                });
+                this.attached = true;
             },
             onCreate: function(){
                 this.spinner = this.shadowRoot.querySelector('.spinner');
             },
             onDetach: function(){
-                this.trio.detached = true;
+                this.detached = true;
             },
             clickSpinner: function() {}
-        })
-    });
+        });
 
-    it('should have a trio object', function() {
-        var el = document.createElement('test-container');
-        expect(typeof el.trio).toBe('object');
-        expect(typeof el.trio.uuid).toBe('string');
-        expect(el.trio.tagName).toBe('test-container');
-        expect(typeof el.trio.clickSpinner).toBe('function');
-        expect(typeof el.trio.on).toBe('function');
-        expect(typeof el.trio.off).toBe('function');
-        expect(typeof el.trio.emit).toBe('function');
-        expect(typeof el.trio.broadcast).toBe('function');
-        expect(typeof el.trio.render).toBe('function');
-        expect(typeof el.trio.patch).toBe('function');
-    });
-
-    it('should register custom element', function() {
-        var el = document.createElement('test-container');
-        expect(el.outerHTML).toBe('<test-container></test-container>');
-        expect(el.shadowRoot.innerHTML).toBe('<style>div.pie-wrapper{background-color:black}div.spinner{background-color:white}</style><div class="pie-wrapper"><div class="spinner "></div></div>');
-    });
-
-    it('should invoke onCreate on element create', function() {
-        var el = document.createElement('test-container');
-        expect(el.spinner.outerHTML).toBe('<div class="spinner "></div>');
-    });
-
-    it('should invoke onAttach on element attach', function(done) {
-        var el = document.createElement('test-container');
-        document.body.appendChild(el);
+        html = c.render({
+            content: 'test',
+            className: 'test-test'
+        });
+        host = document.createElement('div');
+        host.innerHTML = html;
+        el = host.querySelector('test-container');
+        document.body.appendChild(host);
         setTimeout(function() {
-            expect(el.shadowRoot.innerHTML).toBe('<style>div.pie-wrapper{background-color:black}div.spinner{background-color:white}</style><div class="pie-wrapper">test<div class="spinner test-test"></div></div>')
             done();
         }, 0);
     });
 
+    it('should have trio methods', function() {
+        expect(typeof el.uuid).toBe('string');
+        expect(el.tagName).toBe('TEST-CONTAINER');
+        expect(typeof el.clickSpinner).toBe('function');
+        expect(typeof el.on).toBe('function');
+        expect(typeof el.off).toBe('function');
+        expect(typeof el.emit).toBe('function');
+        expect(typeof el.broadcast).toBe('function');
+        expect(typeof el.patch).toBe('function');
+    });
+
+    it('should register custom element', function() {
+        expect(el.outerHTML).toBe('<test-container data-key="test-container2"></test-container>');
+        expect(el.shadowRoot.innerHTML).toBe('<style>div.pie-wrapper{background-color:black}div.spinner{background-color:white}</style><div class="pie-wrapper">test<div class="spinner test-test"></div></div>');
+    });
+
+    it('should invoke onCreate on element create', function() {
+        expect(el.spinner.outerHTML).toBe('<div class="spinner test-test"></div>');
+    });
+
     it('should invoke onAttach on element attach', function() {
-        var el = document.createElement('test-container');
+        expect(el.attached).toBe(true);
+    });
+
+    it('should invoke onChange on element attribute change', function() {
         el.setAttribute('data-test', 'this is a test');
-        expect(el.trio['data-test']).toBe('this is a test');
+        expect(el.testAttribute).toBe('this is a test');
     });
 
     it('should invoke onDetach on element detach', function(done) {
-        var el = document.body.querySelector('test-container');
-        document.body.removeChild(el);
+        document.body.removeChild(host);
         setTimeout(function() {
-            expect(el.trio.detached).toBe(true);
+            expect(el.detached).toBe(true);
             done();
         }, 0)
     });
