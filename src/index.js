@@ -1,7 +1,7 @@
 var Trio = {
     Factory: Factory,
     Service: Service,
-    Component: Component,
+    Component: ComponentManager,
     Vow: Vow,
     AJAX: {
         interceptAllRequest: function(cb) {

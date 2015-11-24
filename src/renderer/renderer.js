@@ -378,7 +378,12 @@ function parseTag(tag) {
 function evaluate(data, funcOrVal) {
     switch (typeof funcOrVal) {
         case 'function':
-            return funcOrVal.call(this, data);
+            try {
+                return funcOrVal.call(this, data);
+            } catch (e) {
+                return '';
+            }
+            break;
         default:
             return funcOrVal;
 
