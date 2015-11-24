@@ -19,6 +19,7 @@ Template.prototype.addClass     = queueCommand('addClass');
 Template.prototype.text         = queueCommand('text');
 Template.prototype.attr         = queueCommand('attribute');
 Template.prototype.style        = queueCommand('style');
+Template.prototype.data         = queueCommand('data');
 Template.prototype.close        = queueCommand('closeTag');
 Template.prototype.if           = queueCommand('if');
 Template.prototype.else         = queueCommand('else');
@@ -170,6 +171,10 @@ Template.prototype.render = function(data) {
                     el = getLastFrom(elements);
                     addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
                     break;
+                case 'data':
+                    el = getLastFrom(elements);
+                    patchElement.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
                 case 'text':
                     el = getLastFrom(elements);
                     addText.apply(el, [evaluate(execData, command.detail[0])]);
@@ -194,9 +199,9 @@ Template.prototype.render = function(data) {
 Template.prototype.patch = function(root, data) {
     var frag = this.render(data);
 
-    dfPatch(root, frag);
+    _patch(root, frag);
 
-    function dfPatch(from, to) {
+    function _patch(from, to) {
         var fromNode, toNode;
         var length = Math.max(from.childNodes.length, to.childNodes.length);
 
@@ -204,16 +209,18 @@ Template.prototype.patch = function(root, data) {
             fromNode = from.childNodes[i];
             toNode   = to.childNodes[i];
 
-            if (!toNode && fromNode) {
+            if (!toNode && !!fromNode) {
                 removeAllAfter(from, i);
                 return;
-            } else if (!fromNode && toNode) {
-                from.appendChild(toNode.cloneNode(true));
+            } else if (!fromNode && !!toNode) {
+                var clone = toNode.cloneNode(true);
+                from.appendChild(clone);
+                patchShadowRoot(clone, toNode);
             } else if (fromNode.tagName !== toNode.tagName) {
                 from.replaceChild(toNode.cloneNode(true), fromNode);
             } else {
                 patchNode(fromNode, toNode);
-                dfPatch(fromNode, toNode);
+                _patch(fromNode, toNode);
             }
         }
     }
@@ -229,6 +236,7 @@ Template.prototype.patch = function(root, data) {
         patchStyle(from, to);
         patchAttributes(from, to);
         patchText(from, to);
+        patchShadowRoot(from, to);
     }
 
     function patchClass(from, to) {
@@ -311,6 +319,12 @@ Template.prototype.patch = function(root, data) {
         }
     }
 
+    function patchShadowRoot(from, to) {
+        if(from.shadowRoot && to.shadowRoot) {
+            _patch(from.shadowRoot, to.shadowRoot);
+        }
+    }
+
 };
 
 //////////////////////////////////////////////////////
@@ -342,7 +356,7 @@ function addClass(className) {
 function removeClass(className) {
     if (hasClass(this, className)) {
         var old = this.className;
-        var out = old.replace(new RegExp('(\\s|^)'+className+'(\\s|$)'), '');
+        var out = old.replace(new RegExp('(\\s|^)' + className + '(\\s|$)'), ' ');
         this.className = out;
     }
 }
@@ -361,6 +375,12 @@ function addText(content) {
     this.textContent = content;
 }
 
+function patchElement(data) {
+    if (data) {
+        this.patch(data);
+    }
+}
+
 function getLastFrom(array) {
     return array[array.length - 1];
 }
@@ -373,6 +393,10 @@ function parseTag(tag) {
     tag = tag.replace(/[.#]/, function(d) { return ',' + d + ',';})
              .split(',');
     return tag;
+}
+
+function isCustomElement(tag) {
+    return !!tag.match('-');
 }
 
 function evaluate(data, funcOrVal) {

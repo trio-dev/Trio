@@ -18,8 +18,8 @@ var Trio = {
     VERSION: '0.1.2'
 };
 
-if (module && module.exports) {
+try {
     module.exports = Trio;
-} else {
+} catch(e) {
     window.Trio = Trio;
 }
