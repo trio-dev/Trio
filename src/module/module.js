@@ -10,13 +10,15 @@ Module.prototype.export = function(key, func) {
     if (typeof func !== 'function') {
         throw new Error('Module is not a function.');
     }
+
+    var module = func();
+
     moduleStore[key] = function(done) {
-        done(func());
+        done(module);
     };
 };
 
 Module.prototype.import = function(modules) {
-    var loaded = 0;
     var count  = Object.keys(modules);
     var vow = Vow();
     var ret = {};
@@ -26,11 +28,17 @@ Module.prototype.import = function(modules) {
 
     vow.promise.and = {};
     vow.promise.and.export = function(key, func) {
+        var module;
         moduleStore[key] = function(done) {
+            if (module) {
+                done(module);
+                return;
+            }
+
             vow.promise
                 .then(function(ret) {
-                    moduleStore[key] = func.bind(this, ret);
-                    return func.call(this, ret);
+                    module = func.call(this, ret);
+                    return module;
                 }.bind(this))
                 .done(done);
         };
@@ -67,7 +75,6 @@ Module.prototype.import = function(modules) {
 
                 defer.promise.then(function(data) {
                     ret[key] = data;
-                    loaded++;
                     if (count.length === 0) {
                         promise.resolve(ret);
                     } else {
@@ -81,7 +88,14 @@ Module.prototype.import = function(modules) {
 
             document.body.appendChild(script);
         } else {
-            promise.resolve(module());
+            module(function(data) {
+                ret[key] = data;
+                if (count.length === 0) {
+                    promise.resolve(ret);
+                } else {
+                    _import(count.pop(), promise);
+                }
+            });
         }
     }
 };
