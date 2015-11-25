@@ -47,19 +47,10 @@ Component.prototype.getData = function(dataKey) {
  * 1. If there is data, save it in COMPONENT_DATASTORE, get dataKey
  * 2. Render <custom-element data-key='dataKey'></custom-element>
  */
-Component.prototype.render = function(data) {
-    var dataKey, html;
-    var temp = document.createElement('div');
-
-    if (data) {
-        dataKey = this.setData(data);
-        html = '<' + this.tagName + ' data-key="' + dataKey + '"></' + this.tagName + '>';
-    } else {
-        html = '<' + this.tagName + '></' + this.tagName + '>';
-    }
-
-    temp.innerHTML = html;
-    return temp.querySelector(this.tagName);
+Component.prototype.createElement = function(data) {
+    var component = document.createElement(this.tagName);
+    component.patch(data);
+    return component;
 };
 
 /**
@@ -71,7 +62,7 @@ Component.prototype.registerElement = function(opts) {
     var tmpl   = opts.template || {};
 
     proto.createdCallback = function() {
-        var shadow, dataKey, data;
+        var shadow, dataKey, data, frag;
         
         if (!tmpl.render || !tmpl.patch) {
             throw new Error('Trio.Template instance not found.');
@@ -85,7 +76,10 @@ Component.prototype.registerElement = function(opts) {
         data = COMPONENT_DATASTORE[dataKey];
 
         // Append rendered fragments into shadowRoot
-        shadow.appendChild(opts.template.render(data));
+        frag = opts.template.render(data);
+        replaceStyleHost.call(this, frag);
+
+        shadow.appendChild(frag);
 
         delete COMPONENT_DATASTORE[dataKey];
 
@@ -96,6 +90,7 @@ Component.prototype.registerElement = function(opts) {
         // Create patch method
         this.patch = function(data) {
             tmpl.patch(shadow, data);
+            replaceStyleHost.call(this, shadow);
         };
 
         // Extend opts into element context
@@ -122,6 +117,19 @@ Component.prototype.registerElement = function(opts) {
                 if (!blacklist[key]) {
                     obj[key] = extendedObject[key];
                 }
+            }
+        }
+
+        function replaceStyleHost(root) {
+            if (window && window.ShadowDOMPolyfill) {
+                var list = root.getElementsByTagName('style');
+                Array.prototype.forEach.call(list, function (style) {
+                    var text = style.textContent
+                        .replace(/:host\b/gm, this.tagName.toLowerCase())
+                        .replace(/::shadow\b/gm, ' ')
+                        .replace(/::content\b/gm, ' ');
+                    style.textContent = text;
+                }.bind(this));
             }
         }
     };

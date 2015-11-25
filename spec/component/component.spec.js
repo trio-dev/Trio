@@ -26,7 +26,7 @@ describe('The Component Class', function() {
                 this.attached = true;
             },
             onCreate: function(){
-                this.spinner = this.shadowRoot.querySelector('.spinner');
+                this.created = true;
             },
             onDetach: function(){
                 this.detached = true;
@@ -34,15 +34,10 @@ describe('The Component Class', function() {
             clickSpinner: function() {}
         });
 
-        frag = c.render({
+        el = c.createElement({
             content: 'test',
             className: 'test-test'
         });
-
-        host = document.createElement('div');
-        host.appendChild(frag);
-        el = host.querySelector('test-container');
-        document.body.appendChild(host);
 
         setTimeout(function() {
             done();
@@ -61,16 +56,21 @@ describe('The Component Class', function() {
     });
 
     it('should register custom element', function() {
-        expect(el.outerHTML).toBe('<test-container data-key="test-container2"></test-container>');
+        expect(el.outerHTML).toBe('<test-container></test-container>');
         expect(el.shadowRoot.innerHTML).toBe('<style>div.pie-wrapper{background-color:black}div.spinner{background-color:white}</style><div class="pie-wrapper">test<div class="spinner test-test"></div></div>');
     });
 
     it('should invoke onCreate on element create', function() {
-        expect(el.spinner.outerHTML).toBe('<div class="spinner test-test"></div>');
+        expect(el.created).toBe(true);
     });
 
-    it('should invoke onAttach on element attach', function() {
-        expect(el.attached).toBe(true);
+    it('should invoke onAttach on element attach', function(done) {
+        document.body.appendChild(el);
+        setTimeout(function() {
+            expect(el.attached).toBe(true);
+            document.body.removeChild(el);
+            done();
+        }, 0);
     });
 
     it('should invoke onChange on element attribute change', function() {
@@ -79,11 +79,12 @@ describe('The Component Class', function() {
     });
 
     it('should invoke onDetach on element detach', function(done) {
-        document.body.removeChild(host);
+        document.body.appendChild(el);
+        document.body.removeChild(el);
         setTimeout(function() {
             expect(el.detached).toBe(true);
             done();
-        }, 0)
+        }, 0);
     });
 
     describe("Multiple Components", function() {
@@ -107,7 +108,7 @@ describe('The Component Class', function() {
                 template: tmpl2
             });
 
-            frag = c2.render({
+            frag = c2.createElement({
                 className: 'parent',
                 container: {
                     content: 'test multiple',
@@ -127,7 +128,7 @@ describe('The Component Class', function() {
         });
 
         it('should render both custom element', function() {
-            expect(parent.outerHTML).toBe('<test-parent-el data-key="test-parent-el1"></test-parent-el>')
+            expect(parent.outerHTML).toBe('<test-parent-el></test-parent-el>')
             expect(parent.shadowRoot.innerHTML).toBe('<style>div.parent{background-color:black}div.parent-el{background-color:white}</style><div class="parent-el parent"><test-container></test-container></div>');
             expect(el.outerHTML).toBe('<test-container></test-container>');
             expect(el.shadowRoot.innerHTML).toBe('<style>div.pie-wrapper{background-color:black}div.spinner{background-color:white}</style><div class="pie-wrapper">test multiple<div class="spinner test-multiple"></div></div>');
@@ -142,7 +143,7 @@ describe('The Component Class', function() {
                 }
             });
 
-            expect(parent.outerHTML).toBe('<test-parent-el data-key="test-parent-el2"></test-parent-el>')
+            expect(parent.outerHTML).toBe('<test-parent-el></test-parent-el>')
             expect(parent.shadowRoot.innerHTML).toBe('<style>div.parent{background-color:black}div.parent-el{background-color:white}</style><div class="parent-el parent2"><test-container></test-container></div>');
             expect(el.outerHTML).toBe('<test-container></test-container>');
             expect(el.shadowRoot.innerHTML).toBe('<style>div.pie-wrapper{background-color:black}div.spinner{background-color:white}</style><div class="pie-wrapper">test multiple2<div class="spinner test-multiple2"></div></div>');
