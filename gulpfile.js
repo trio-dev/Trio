@@ -17,19 +17,34 @@ var coveralls = require('gulp-coveralls');
 var development  = environments.development;
 var production   = environments.production;
 
+var buildSrc = [
+    'src/polyfills/*.js',
+    'src/init/*.js',
+    'src/helpers/*.js',
+    'src/signal/*.js',
+    'src/module/*.js',
+    'src/resource/*.js',
+    'src/factory/*.js',
+    'src/service/*.js',
+    'src/stylizer/*.js',
+    'src/renderer/*.js',
+    'src/component/*.js',
+    'src/index.js'
+];
+
 // Lint Task
 gulp.task('lint', function() {
     return gulp.src([
+            'src/init/*.js',
             'src/helpers/*.js',
-            'src/vow/*.js',
             'src/signal/*.js',
-            'src/factory/*.js',
-            'src/service/*.js',
-            'src/component/*.js',
-            'src/stylizer/*.js',
             'src/module/*.js',
             'src/resource/*.js',
+            'src/factory/*.js',
+            'src/service/*.js',
+            'src/stylizer/*.js',
             'src/renderer/*.js',
+            'src/component/*.js',
             'src/index.js'
         ])
         .pipe(jshint())
@@ -76,20 +91,7 @@ gulp.task('default', ['lint', 'scripts']);
 
 // Concatenate & Minify JS
 function devScript() {
-    return gulp.src([
-            'src/helpers/*.js',
-            'src/polyfills/*.js',
-            'src/vow/*.js',
-            'src/signal/*.js',
-            'src/factory/*.js',
-            'src/service/*.js',
-            'src/component/*.js',
-            'src/stylizer/*.js',
-            'src/module/*.js',
-            'src/resource/*.js',
-            'src/renderer/*.js',
-            'src/index.js'
-        ])
+    return gulp.src(buildSrc)
         .pipe(sourcemaps.init())
             .pipe(concat('trio.js'))
             .pipe(wrap('(function(){\n"use strict";\n<%= contents %>\n})();'))
@@ -101,20 +103,7 @@ function devScript() {
 
 // Concatenate & Minify JS
 function prodSrcipt() {
-    return gulp.src([
-            'src/helpers/*.js',
-            'src/polyfills/*.js',
-            'src/vow/*.js',
-            'src/signal/*.js',
-            'src/factory/*.js',
-            'src/service/*.js',
-            'src/component/*.js',
-            'src/stylizer/*.js',
-            'src/module/*.js',
-            'src/resource/*.js',
-            'src/renderer/*.js',
-            'src/index.js'
-        ])
+    return gulp.src(buildSrc)
         .pipe(concat('trio.js'))
         .pipe(wrap('(function(){\n"use strict";\n<%= contents %>\n})();'))
         .pipe(strip())

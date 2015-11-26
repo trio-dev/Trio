@@ -1,4 +1,5 @@
 describe('The Signal Class', function() {
+    var Signal = scope.Signal;
     describe('One Signal', function() {
         var instance1 = {},
             instance2 = {},

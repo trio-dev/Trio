@@ -1,38 +1,43 @@
-function extend(methods) {
-    var parent = this._constructor;
+(function() {
+    // Extend function to to extend Trio Class
+    scope.extend = extend;
 
-    if (!parent) {
-        return;
-    }
+    function extend(methods) {
+        var parent = this._constructor;
 
-    var staticAttr = {};
-    var child = function() {
-        for (var key in staticAttr) {
-            this[key] = staticAttr[key];
+        if (!parent) {
+            return;
         }
-        parent.apply(this, arguments);
-    };
-    
-    var extended = {};
 
-    for (var prop in parent.prototype) {
-        if (Object.prototype.hasOwnProperty.call(parent.prototype, prop)) {
-            extended[prop] = parent.prototype[prop];
-        }
-    }
+        var staticAttr = {};
+        var child = function() {
+            for (var key in staticAttr) {
+                this[key] = staticAttr[key];
+            }
+            parent.apply(this, arguments);
+        };
+        
+        var extended = {};
 
-    for (var met in methods) {
-        if (Object.prototype.hasOwnProperty.call(methods, met)) {
-            var method = methods[met];
-            if (typeof method === 'function') {
-                extended[met] = methods[met];
-            } else {
-                staticAttr[met] = methods[met];
+        for (var prop in parent.prototype) {
+            if (Object.prototype.hasOwnProperty.call(parent.prototype, prop)) {
+                extended[prop] = parent.prototype[prop];
             }
         }
+
+        for (var met in methods) {
+            if (Object.prototype.hasOwnProperty.call(methods, met)) {
+                var method = methods[met];
+                if (typeof method === 'function') {
+                    extended[met] = methods[met];
+                } else {
+                    staticAttr[met] = methods[met];
+                }
+            }
+        }
+
+        child.prototype = Object.create(extended);
+
+        return child;
     }
-
-    child.prototype = Object.create(extended);
-
-    return child;
-}
+})();

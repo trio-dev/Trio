@@ -1,25 +1,16 @@
-var Trio = {
-    Factory: Factory,
-    Service: Service,
-    Component: ComponentManager,
-    Vow: Vow,
-    AJAX: {
-        interceptAllRequest: function(cb) {
-            GLOBAL_AJAX_REQUEST_INTERCEPT = cb;
-        },
-        interceptAllResponse: function(cb) {
-            GLOBAL_AJAX_RESPONSE_INTERCEPT = cb;
-        }
-    },
-    Stylizer: new Stylizer(),
-    Renderer: new Renderer(),
-    Module: new Module(),
-    Resource: new ResourceManager(),
-    VERSION: '0.1.2'
-};
+if( typeof exports !== 'undefined' ) {
+    
+    if( typeof module !== 'undefined' && module.exports ) {
+        exports = module.exports = Trio;
+    }
 
-try {
-    module.exports = Trio;
-} catch(e) {
-    window.Trio = Trio;
+    exports.Trio = Trio;
+
+} else {
+
+    if (typeof window !== 'undefined') {
+        window.Trio = Trio;
+    } else if (typeof global !== 'undefined') {
+        global.Trio = Trio;
+    }
 }

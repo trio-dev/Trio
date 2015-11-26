@@ -1,6 +1,6 @@
 describe('Vow', function() {
-    var vow = Vow();
-    
+    var Vow = scope.Vow;
+
     describe('basics', function() {
         var vow;
         beforeEach(function() {
