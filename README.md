@@ -1,22 +1,43 @@
 [![Build Status](https://travis-ci.org/chikeichan/Trio.svg?branch=dev)](https://travis-ci.org/chikeichan/Trio)
 [![Coverage Status](https://coveralls.io/repos/chikeichan/Trio/badge.svg?branch=dev&service=github)](https://coveralls.io/github/chikeichan/Trio?branch=dev)
-<br>
 [![Stories in Ready](https://badge.waffle.io/chikeichan/Trio.svg?label=ready&title=Ready)](http://waffle.io/chikeichan/Trio)
 # Trio
 
-## Main Classes
-- Factory reference Resource(id/s)
-- Service defines interactions between factory and component
-- Component renders UI/UX, register custom element
+A framework for building structure, efficient application with web component.
 
-## Singletons
-- Resources interacts with BE and cache results.
-- Modules controls import and export of js files, cache results.
-- Stylizer compiles CSS, stores variable and mixins
-- Renderer compiles HTML, stores templates and helper funnctions
+## Documentations
+- Module
+- Resource
+- Factory
+- Component
+- Renderer
+- Stylizer
+- Service
 
-## Design principles
-- Less setting and getting
-- Small, reusable components
-- Less subclassing
-- Event-based Data-binding
+## Using Trio
+You can acquire Trio using npm:
+```bash
+npm install trio
+```
+or simply download from [here][files] and put in in your script tag.
+[files]: https://github.com/chikeichan/Trio/tree/release-0.2.0/dist
+
+## Developing for Trio
+### Installing dependencies (from within root directory)
+```bash
+npm install
+```
+
+### Testing
+```bash
+gulp test
+```
+
+### Building
+```bash
+// Build once
+gulp build --env [development or production]
+
+// Build continuously
+gulp watch --env [development or production]
+```
