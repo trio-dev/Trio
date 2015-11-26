@@ -1,32 +1,48 @@
-var Factory = {};
-var factoryIdGenerator = idGenerator('factory');
+(function() {
+    var factoryIdGenerator = scope.idGenerator('factory');
+    var Signal = scope.Signal;
 
-Factory._constructor = function(opts) {
-    this.attributes = {};
-    this.uuid       = factoryIdGenerator();
-    this.resources  = {};
-    new Signal(this.uuid, this);
+    //////////////////////////////////////////////////////
+    ////////////////////// Factory ///////////////////////
+    //////////////////////////////////////////////////////
+    /// Sync data with different resource, and manage data 
+    /// as the single source of truth for components
 
-    this.initialize(opts);
-};
+    // NOTE:
+    // Planned Features--
+    //  1. Schema enforcement
 
-Factory._constructor.prototype.initialize = function() {};
+    var Factory = {};
 
-/**
- * Sync factory with resourceName, and connect with resource's signal.
- * Map callback will be invoked with the resource object passed in on first sync, 
- * and every time resource is updated.
- */
-Factory._constructor.prototype.sync = function(resourceName, map) {
-    var resource = RESOURCE_STORE[resourceName];
+    Factory._constructor = function(opts) {
+        this.attributes = {};
+        this.uuid       = factoryIdGenerator();
+        this.resources  = {};
+        new Signal(this.uuid, this);
 
-    if (!resource) throw new Error('Resource ' + resourceName + ' does not exist.');
+        this.initialize(opts);
+    };
 
-    this.resources[resourceName] = resource;
-    this.connect(resource.uuid);
-    map.call(this, resource);
-    this.on('update:' + resource.uuid, map.bind(this, resource));
+    Factory._constructor.prototype.initialize = function() {};
 
-};
+    /**
+     * Sync factory with resourceName, and connect with resource's signal.
+     * Map callback will be invoked with the resource object passed in on first sync, 
+     * and every time resource is updated.
+     */
+    Factory._constructor.prototype.sync = function(resourceName, map) {
+        var resource = Trio.Resource.get(resourceName);
 
-Factory.extend = extend;
+        if (!resource) throw new Error('Resource ' + resourceName + ' does not exist.');
+
+        this.resources[resourceName] = resource;
+        this.connect(resource.uuid);
+        map.call(this, resource);
+        this.on('update:' + resource.uuid, map.bind(this, resource));
+
+    };
+
+    Factory.extend = scope.extend;
+    Trio.Factory = Factory;
+
+})();

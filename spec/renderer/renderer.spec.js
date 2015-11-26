@@ -1,8 +1,7 @@
 describe('The Renderer Class', function() {
     var r, t, el;
     beforeEach(function() {
-        r  = new Renderer();
-        t  = r.createTemplate();
+        t  = Trio.Renderer.createTemplate();
         el = document.createElement('div');
     });
 
@@ -85,7 +84,7 @@ describe('The Renderer Class', function() {
 
         expect(el.innerHTML).toBe('<div id="parent"><span class="true"></span></div>');
 
-        t = r.createTemplate();
+        t = Trio.Renderer.createTemplate();
         el.innerHTML = "";
 
         t.open('div#parent')

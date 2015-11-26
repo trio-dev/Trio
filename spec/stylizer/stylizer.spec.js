@@ -2,8 +2,7 @@ describe('Stylizer', function() {
     var s, style;
     
     beforeEach(function() {
-        s = new Stylizer();
-        style = s.create();
+        style = Trio.Stylizer.create();
     });
 
     it('should stringify style object', function() {
@@ -40,23 +39,23 @@ describe('Stylizer', function() {
     it('should register variable', function() {
         var ans;
         
-        s.registerVariable('baseColor', 'black');
+        Trio.Stylizer.registerVariable('baseColor', 'black');
         
-        ans = s.getVariable('baseColor');
+        ans = Trio.Stylizer.getVariable('baseColor');
         
         expect(ans).toBe('black');
     
     });
 
     it('should replace variable when format like $variable', function() {
-        s.registerVariable('rgb', 'rgb(0,0,0)');
-        s.registerVariable('hex', '#F904C5');
-        s.registerVariable('str', 'orange');
-        s.registerVariable('opac', '0.5');
-        s.registerVariable('width', '100px');
-        s.registerVariable('height', '200px');
-        s.registerVariable('borderWidth', '2px');
-        s.registerVariable('borderColor', '#FFFFFF');
+        Trio.Stylizer.registerVariable('rgb', 'rgb(0,0,0)');
+        Trio.Stylizer.registerVariable('hex', '#F904C5');
+        Trio.Stylizer.registerVariable('str', 'orange');
+        Trio.Stylizer.registerVariable('opac', '0.5');
+        Trio.Stylizer.registerVariable('width', '100px');
+        Trio.Stylizer.registerVariable('height', '200px');
+        Trio.Stylizer.registerVariable('borderWidth', '2px');
+        Trio.Stylizer.registerVariable('borderColor', '#FFFFFF');
 
         style.select('div.test')
                 .css('background-color', 'rgba($rgb, $opac)')
@@ -87,8 +86,8 @@ describe('Stylizer', function() {
         var mixin = function(n) {
             return n + 'px';
         }
-        s.registerMixin('baseLength', mixin);
-        ans = s.getMixin('baseLength');
+        Trio.Stylizer.registerMixin('baseLength', mixin);
+        ans = Trio.Stylizer.getMixin('baseLength');
         expect(ans).toBe(mixin);
     });
 });

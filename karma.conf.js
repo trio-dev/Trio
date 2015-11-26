@@ -8,26 +8,26 @@ module.exports = function(config) {
 
         files: [
             'spec/beforeSpec.js',
-            'src/helpers/*.js',
             'src/polyfills/*.js',
-            'src/vow/*.js',
+            'src/init/*.js',
+            'src/helpers/*.js',
             'src/signal/*.js',
-            'src/factory/*.js',
-            'src/service/*.js',
-            'src/component/*.js',
-            'src/stylizer/*.js',
             'src/module/*.js',
             'src/resource/*.js',
+            'src/factory/*.js',
+            'src/service/*.js',
+            'src/stylizer/*.js',
             'src/renderer/*.js',
+            'src/component/*.js',
             'src/index.js',
-            'spec/signal/signal.spec.js',
             'spec/vow/vow.spec.js',
+            'spec/signal/signal.spec.js',
+            'spec/resource/resource.spec.js',
+            'spec/factory/factory.spec.js',
+            'spec/service/service.spec.js',
             'spec/renderer/renderer.spec.js',
             'spec/stylizer/stylizer.spec.js',
-            'spec/component/component.spec.js',
-            'spec/service/service.spec.js',
-            'spec/resource/resource.spec.js',
-            'spec/factory/factory.spec.js'
+            'spec/component/component.spec.js'
         ],
 
         preprocessors: {
