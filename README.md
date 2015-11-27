@@ -6,13 +6,7 @@
 A framework for building structure, efficient application with web component.
 
 ## Documentations
-- Module
-- Resource
-- Factory
-- Component
-- Renderer
-- Stylizer
-- Service
+[See Trio Documentations in Wiki] (https://github.com/chikeichan/Trio/wiki)
 
 ## Using Trio
 You can acquire Trio using npm:
