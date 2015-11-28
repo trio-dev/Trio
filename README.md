@@ -29,9 +29,9 @@ gulp test
 
 ### Building
 ```bash
-// Build once
+# Build once
 gulp build --env [development or production]
 
-// Build continuously
+# Build continuously
 gulp watch --env [development or production]
 ```
