@@ -1,6 +1,6 @@
 {
   "name": "trio",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "",
   "main": "dist/trio.min.js",
   "scripts": {
