@@ -7,6 +7,7 @@ module.exports = function(config) {
         reporters: ['mocha', 'coverage'],
 
         files: [
+            { pattern: 'spec/module/assets/**/*.js', included: false, served: true },
             'spec/beforeSpec.js',
             'src/polyfills/*.js',
             'src/init/*.js',
@@ -21,6 +22,7 @@ module.exports = function(config) {
             'src/component/*.js',
             'src/index.js',
             'spec/vow/vow.spec.js',
+            'spec/module/module.spec.js',
             'spec/signal/signal.spec.js',
             'spec/resource/resource.spec.js',
             'spec/factory/factory.spec.js',
@@ -34,7 +36,7 @@ module.exports = function(config) {
             // source files, that you wanna generate coverage for
             // do not include tests or libraries
             // (these files will be instrumented by Istanbul)
-            'src/**/*.js': ['coverage']
+            'src/**/!(*webcomponents).js': ['coverage']
         },
 
         // optionally, configure the reporter
