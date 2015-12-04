@@ -64,17 +64,63 @@
         // Root element to store DOMs
         var root            = document.createDocumentFragment(),
         // Stacks to reference current context
-            elements        = [],
-            conditionals    = [],
+            elements        = [];
+
+        this.executeCommand(data, handleCommonActions);
+
+        return root;
+
+        function handleCommonActions(command, execData) {
+            var el;
+            switch (command.action) {
+                case 'openTag':
+                    elements.push(createTag.apply(null, command.detail));
+                    break;
+                case 'addClass':
+                    el = getLastFrom(elements);
+                    addClass.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'style':
+                    el = getLastFrom(elements);
+                    addStyle.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'attribute':
+                    el = getLastFrom(elements);
+                    addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'data':
+                    el = getLastFrom(elements);
+                    patchElement.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'text':
+                    el = getLastFrom(elements);
+                    addText.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'closeTag':
+                    el = elements.pop();
+                    if (elements.length === 0) {
+                        root.appendChild(el);
+                    } else {
+                        getLastFrom(elements).appendChild(el);
+                    }
+                    break;
+            }
+        }
+    };
+
+    // Execute command is an iterator
+    // Base on the data that was input, executeCommand will invoke callback in the right order
+    // with the command object + data context
+    Template.prototype.executeCommand = function(data, cb) {
+        // Stacks to reference current context
+        var conditionals    = [],
             loops           = [],
             states          = [],
         // Reference index for current execution
             execIndex       = 0,
-            el, condition, loop;
+            condition, loop;
 
         handleCommand.call(this, this._queue[execIndex], data);
-
-        return root;
 
         function handleCommand(command, execData) {
             // Grab current state: LOOP, CONDITIONAL, or undefined
@@ -103,7 +149,7 @@
 
             // Handle CREATE, APPEND, STYLE, ATTR, TEXT
             // These methods are purely rendering and do not change rendering state
-            handleCommonActions();
+            cb(command, execData);
 
             // Increment index for next execution
             execIndex++;
@@ -117,20 +163,19 @@
             }
 
             function handleStateActions() {
-                if (command.action === 'loop') {
-                    handleLoop();
-                }
-
-                if (command.action === 'done') {
-                    handleDone();
-                }
-                
-                if (command.action === 'if') {
-                    handleIf();
-                }
-
-                if (command.action === 'else') {
-                    handleElse();
+                switch (command.action) {
+                    case 'loop':
+                        handleLoop();
+                        break;
+                    case 'done':
+                        handleDone();
+                        break;
+                    case 'if':
+                        handleIf();
+                        break;
+                    case 'else':
+                        handleElse();
+                        break;
                 }
             }
 
@@ -170,42 +215,6 @@
             function handleElse() {
                 condition = !conditionals.pop();
                 conditionals.push(condition);
-            }
-
-            function handleCommonActions() {
-                switch (command.action) {
-                    case 'openTag':
-                        elements.push(createTag.apply(null, command.detail));
-                        break;
-                    case 'addClass':
-                        el = getLastFrom(elements);
-                        addClass.apply(el, [evaluate(execData, command.detail[0])]);
-                        break;
-                    case 'style':
-                        el = getLastFrom(elements);
-                        addStyle.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
-                        break;
-                    case 'attribute':
-                        el = getLastFrom(elements);
-                        addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
-                        break;
-                    case 'data':
-                        el = getLastFrom(elements);
-                        patchElement.apply(el, [evaluate(execData, command.detail[0])]);
-                        break;
-                    case 'text':
-                        el = getLastFrom(elements);
-                        addText.apply(el, [evaluate(execData, command.detail[0])]);
-                        break;
-                    case 'closeTag':
-                        el = elements.pop();
-                        if (elements.length === 0) {
-                            root.appendChild(el);
-                        } else {
-                            getLastFrom(elements).appendChild(el);
-                        }
-                        break;
-                }
             }
         }
     };
@@ -421,7 +430,7 @@
         switch (typeof funcOrVal) {
             case 'function':
                 try {
-                    return funcOrVal.call(this, data);
+                    return funcOrVal.call(data, data);
                 } catch (e) {
                     return '';
                 }
