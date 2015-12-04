@@ -49,6 +49,7 @@
         // Exposed a setter and getter to interact with LRU Cache
         this.set = cache.set.bind(this);
         this.get = cache.get.bind(this);
+        this.initialize(opts);
     };
 
     // Decorated ajax function
@@ -66,6 +67,7 @@
     };
 
     // Intercept all Response and Request thru resource instance
+    Resource._constructor.prototype.initialize = function() {};
     Resource._constructor.prototype.interceptResponse = function(res) { return res; };
     Resource._constructor.prototype.interceptRequest = function(req) { return req; };
 
