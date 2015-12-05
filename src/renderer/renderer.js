@@ -38,6 +38,7 @@
     Template.prototype.attr         = queueCommand('attribute');
     Template.prototype.style        = queueCommand('style');
     Template.prototype.data         = queueCommand('data');
+    Template.prototype.doNotPatch   = queueCommand('doNotPatch');
     Template.prototype.close        = queueCommand('closeTag');
     Template.prototype.if           = queueCommand('if');
     Template.prototype.else         = queueCommand('else');
@@ -87,6 +88,10 @@
                 case 'attribute':
                     el = getLastFrom(elements);
                     addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'doNotPatch':
+                    el = getLastFrom(elements);
+                    addAttribute.call(el, 'data-do-not-patch', true);
                     break;
                 case 'data':
                     el = getLastFrom(elements);
@@ -232,20 +237,26 @@
             var fromNode, toNode;
             var length = Math.max(from.childNodes.length, to.childNodes.length);
 
+            // Iterate over the longer children
             for (var i = 0; i < length; i++) {
                 fromNode = from.childNodes[i];
                 toNode   = to.childNodes[i];
 
+                // If new DOM is shorter old DOM, trim old DOM
                 if (!toNode && !!fromNode) {
                     removeAllAfter(from, i);
                     return;
                 } else if (!fromNode && !!toNode) {
+                    // If new DOM is longer than old DOM, insert new DOM
                     var clone = toNode.cloneNode(true);
                     from.appendChild(clone);
                     patchShadowRoot(clone, toNode);
                 } else if (fromNode.tagName !== toNode.tagName) {
+                    // Replace old with new if tag type is different
                     from.replaceChild(toNode.cloneNode(true), fromNode);
                 } else {
+                    // Patch node if no do-not-patch flag
+                    if (fromNode.getAttribute && fromNode.getAttribute('data-do-not-patch')) return;
                     patchNode(fromNode, toNode);
                     _patch(fromNode, toNode);
                 }
@@ -288,8 +299,10 @@
         }
 
         function patchText(from, to) {
-            if (from.textContent !== to.textContent) {
-                from.textContent = to.textContent;
+            if (from.nodeName === '#text' && to.nodeName === '#text') {
+                if (from.textContent !== to.textContent) {
+                    from.textContent = to.textContent;
+                }
             }
         }
 

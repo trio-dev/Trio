@@ -353,6 +353,43 @@ describe('The Renderer Class', function() {
             expect(el.innerHTML).toBe('<div id="parent" class=" test2" disabled="" style="">Jacky Chan</div>');
         });
 
+        it("should not patch element that has doNotPatch", function() {
+            var frag;
+            t.open('div#parent')
+                .text(function(d) {return d.name})
+                .open('div.children')
+                    .text(function(d) {return d.cName})
+                .close()
+                .open('div.children')
+                    .doNotPatch()
+                    .text(function(d) { return d.cName})
+                .close()
+            .close();
+
+            var res = t.render({
+                name: 'Chi Kei Chan',
+                cName: 'test',
+            });
+
+            el.appendChild(res);
+
+            expect(el.innerHTML).toBe('<div id="parent">Chi Kei Chan<div class="children">test</div><div class="children" data-do-not-patch="true">test</div></div>');
+
+            t.patch(el, {
+                name: 'Jacky Chan',
+                cName: 'test two'
+            });
+
+            expect(el.innerHTML).toBe('<div id="parent">Jacky Chan<div class="children">test two</div><div class="children" data-do-not-patch="true">test</div></div>');
+
+            t.patch(el, {
+                name: 'Chan',
+                cName: 'test three'
+            });
+
+            expect(el.innerHTML).toBe('<div id="parent">Chan<div class="children">test three</div><div class="children" data-do-not-patch="true">test</div></div>');
+        });
+
         it("should patch conditionals", function() {
             var frag;
             t.open('div#parent')
