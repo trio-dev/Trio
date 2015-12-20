@@ -38,6 +38,7 @@
     Template.prototype.attr         = queueCommand('attribute');
     Template.prototype.style        = queueCommand('style');
     Template.prototype.data         = queueCommand('data');
+    Template.prototype.doNotPatch   = queueCommand('doNotPatch');
     Template.prototype.close        = queueCommand('closeTag');
     Template.prototype.if           = queueCommand('if');
     Template.prototype.else         = queueCommand('else');
@@ -64,17 +65,67 @@
         // Root element to store DOMs
         var root            = document.createDocumentFragment(),
         // Stacks to reference current context
-            elements        = [],
-            conditionals    = [],
+            elements        = [];
+
+        this.executeCommand(data, handleCommonActions);
+
+        return root;
+
+        function handleCommonActions(command, execData) {
+            var el;
+            switch (command.action) {
+                case 'openTag':
+                    elements.push(createTag.apply(null, command.detail));
+                    break;
+                case 'addClass':
+                    el = getLastFrom(elements);
+                    addClass.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'style':
+                    el = getLastFrom(elements);
+                    addStyle.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'attribute':
+                    el = getLastFrom(elements);
+                    addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
+                    break;
+                case 'doNotPatch':
+                    el = getLastFrom(elements);
+                    addAttribute.call(el, 'data-do-not-patch', true);
+                    break;
+                case 'data':
+                    el = getLastFrom(elements);
+                    patchElement.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'text':
+                    el = getLastFrom(elements);
+                    addText.apply(el, [evaluate(execData, command.detail[0])]);
+                    break;
+                case 'closeTag':
+                    el = elements.pop();
+                    if (elements.length === 0) {
+                        root.appendChild(el);
+                    } else {
+                        getLastFrom(elements).appendChild(el);
+                    }
+                    break;
+            }
+        }
+    };
+
+    // Execute command is an iterator
+    // Base on the data that was input, executeCommand will invoke callback in the right order
+    // with the command object + data context
+    Template.prototype.executeCommand = function(data, cb) {
+        // Stacks to reference current context
+        var conditionals    = [],
             loops           = [],
             states          = [],
         // Reference index for current execution
             execIndex       = 0,
-            el, condition, loop;
+            condition, loop;
 
         handleCommand.call(this, this._queue[execIndex], data);
-
-        return root;
 
         function handleCommand(command, execData) {
             // Grab current state: LOOP, CONDITIONAL, or undefined
@@ -103,7 +154,7 @@
 
             // Handle CREATE, APPEND, STYLE, ATTR, TEXT
             // These methods are purely rendering and do not change rendering state
-            handleCommonActions();
+            cb(command, execData);
 
             // Increment index for next execution
             execIndex++;
@@ -117,20 +168,19 @@
             }
 
             function handleStateActions() {
-                if (command.action === 'loop') {
-                    handleLoop();
-                }
-
-                if (command.action === 'done') {
-                    handleDone();
-                }
-                
-                if (command.action === 'if') {
-                    handleIf();
-                }
-
-                if (command.action === 'else') {
-                    handleElse();
+                switch (command.action) {
+                    case 'loop':
+                        handleLoop();
+                        break;
+                    case 'done':
+                        handleDone();
+                        break;
+                    case 'if':
+                        handleIf();
+                        break;
+                    case 'else':
+                        handleElse();
+                        break;
                 }
             }
 
@@ -171,42 +221,6 @@
                 condition = !conditionals.pop();
                 conditionals.push(condition);
             }
-
-            function handleCommonActions() {
-                switch (command.action) {
-                    case 'openTag':
-                        elements.push(createTag.apply(null, command.detail));
-                        break;
-                    case 'addClass':
-                        el = getLastFrom(elements);
-                        addClass.apply(el, [evaluate(execData, command.detail[0])]);
-                        break;
-                    case 'style':
-                        el = getLastFrom(elements);
-                        addStyle.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
-                        break;
-                    case 'attribute':
-                        el = getLastFrom(elements);
-                        addAttribute.apply(el, [evaluate(execData, command.detail[0]), evaluate(execData, command.detail[1])]);
-                        break;
-                    case 'data':
-                        el = getLastFrom(elements);
-                        patchElement.apply(el, [evaluate(execData, command.detail[0])]);
-                        break;
-                    case 'text':
-                        el = getLastFrom(elements);
-                        addText.apply(el, [evaluate(execData, command.detail[0])]);
-                        break;
-                    case 'closeTag':
-                        el = elements.pop();
-                        if (elements.length === 0) {
-                            root.appendChild(el);
-                        } else {
-                            getLastFrom(elements).appendChild(el);
-                        }
-                        break;
-                }
-            }
         }
     };
 
@@ -223,20 +237,26 @@
             var fromNode, toNode;
             var length = Math.max(from.childNodes.length, to.childNodes.length);
 
+            // Iterate over the longer children
             for (var i = 0; i < length; i++) {
                 fromNode = from.childNodes[i];
                 toNode   = to.childNodes[i];
 
+                // If new DOM is shorter old DOM, trim old DOM
                 if (!toNode && !!fromNode) {
                     removeAllAfter(from, i);
                     return;
                 } else if (!fromNode && !!toNode) {
+                    // If new DOM is longer than old DOM, insert new DOM
                     var clone = toNode.cloneNode(true);
                     from.appendChild(clone);
                     patchShadowRoot(clone, toNode);
                 } else if (fromNode.tagName !== toNode.tagName) {
+                    // Replace old with new if tag type is different
                     from.replaceChild(toNode.cloneNode(true), fromNode);
                 } else {
+                    // Patch node if no do-not-patch flag
+                    if (fromNode.getAttribute && fromNode.getAttribute('data-do-not-patch')) return;
                     patchNode(fromNode, toNode);
                     _patch(fromNode, toNode);
                 }
@@ -279,8 +299,10 @@
         }
 
         function patchText(from, to) {
-            if (from.textContent !== to.textContent) {
-                from.textContent = to.textContent;
+            if (from.nodeName === '#text' && to.nodeName === '#text') {
+                if (from.textContent !== to.textContent) {
+                    from.textContent = to.textContent;
+                }
             }
         }
 
@@ -421,7 +443,7 @@
         switch (typeof funcOrVal) {
             case 'function':
                 try {
-                    return funcOrVal.call(this, data);
+                    return funcOrVal.call(data, data);
                 } catch (e) {
                     return '';
                 }

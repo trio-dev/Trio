@@ -39,6 +39,8 @@ module.exports = function(config) {
             'src/**/!(*webcomponents).js': ['coverage']
         },
 
+        singleRun: true,
+
         // optionally, configure the reporter
         coverageReporter: {
             dir : 'coverage/',
