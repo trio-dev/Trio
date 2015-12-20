@@ -20,7 +20,15 @@
     // });
     // 
     // This will store a wrapped function that resolve 'hi' to MODULE_STORE[filepath]
-    Module.prototype.export = function(func, url) {
+    Module.prototype.export = function() {
+        var func, url;
+        if (typeof arguments[0] === 'string' && typeof arguments[1] === 'function') {
+            func = arguments[1];
+            url  = arguments[0];
+        } else {
+            func = arguments[0];
+        }
+
         if (typeof func !== 'function') {
             throw new Error('Module is not a function.');
         }
@@ -75,7 +83,16 @@
         // Expose an and.export method for cleaner API when
         // importing and exporting modules.
         vow.promise.and = {};
-        vow.promise.and.export = function(func, url) {
+        vow.promise.and.export = function() {
+            var func, url;
+
+            if (typeof arguments[0] === 'string' && typeof arguments[1] === 'function') {
+                func = arguments[1];
+                url  = arguments[0];
+            } else {
+                func = arguments[0];
+            }
+
             var module;
             var filepath = getFilepath(url);
             MODULE_STORE[filepath] = function(done) {
@@ -93,7 +110,16 @@
             };
         }.bind(this);
 
-        vow.promise.and.then = function(func) {
+        vow.promise.and.then = function() {
+            var func, url, module;
+
+            if (typeof arguments[0] === 'string' && typeof arguments[1] === 'function') {
+                func = arguments[1];
+                url  = arguments[0];
+            } else {
+                func = arguments[0];
+            }
+
             vow.promise
                 .then(function(ret) {
                     module = func.apply(this, ret);
@@ -106,12 +132,18 @@
 
         // Sub routine for import
         function _import(relativeUrl, returnObject, promise) {
-            // Create script tag
-            var script   = makeScript(relativeUrl);
-            var filepath = script.src;
+            var script, filepath, module;
 
-            // See if module is already cached
-            var module   = MODULE_STORE[script.src];
+            if (MODULE_STORE[relativeUrl]) {
+                module = MODULE_STORE[relativeUrl];
+            } else {
+                // Create script tag
+                script   = makeScript(relativeUrl);
+                filepath = script.src;
+
+                // See if module is already cached
+                module   = MODULE_STORE[script.src];
+            }
 
             // If module is not already cached
             if (!module) {

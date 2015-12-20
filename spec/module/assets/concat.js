@@ -1,32 +1,32 @@
-Trio.Module.export(function() {
+Trio.Module.export('http://www.trioisawesome.com/base/spec/module/assets/ef.js', function() {
 	return 'f';
-}, 'http://www.trioisawesome.com/base/spec/module/assets/ef.js');
+});
 
-Trio.Module.export(function() {
+Trio.Module.export('http://www.trioisawesome.com/base/spec/module/assets/argh.js', function() {
 	return 'ar';
-}, 'http://www.trioisawesome.com/base/spec/module/assets/argh.js');
+});
 
-Trio.Module.export(function() {
+Trio.Module.export('http://www.trioisawesome.com/base/spec/module/assets/bee.js', function() {
 	return 'b';
-}, 'http://www.trioisawesome.com/base/spec/module/assets/bee.js');
+});
 
-Trio.Module.export(function() {
+Trio.Module.export('http://www.trioisawesome.com/base/spec/module/assets/oooo.js', function() {
 	return 'oo';
-}, 'http://www.trioisawesome.com/base/spec/module/assets/oooo.js');
+});
 
 Trio.Module.import([
 	'http://www.trioisawesome.com/base/spec/module/assets/bee.js',
 	'http://www.trioisawesome.com/base/spec/module/assets/argh.js'
-]).and.export(function(b, ar) {
+]).and.export('http://www.trioisawesome.com/base/spec/module/assets/bah.js', function(b, ar) {
 	return b + ar;
-}, 'http://www.trioisawesome.com/base/spec/module/assets/bah.js');
+});
 
 Trio.Module.import([
 	'http://www.trioisawesome.com/base/spec/module/assets/ef.js',
 	'http://www.trioisawesome.com/base/spec/module/assets/oooo.js'
-]).and.export(function(f, oo) {
+]).and.export('http://www.trioisawesome.com/base/spec/module/assets/fooooo.js', function(f, oo) {
 	return f + oo;
-}, 'http://www.trioisawesome.com/base/spec/module/assets/fooooo.js');
+});
 
 Trio.Module.import([
 	'http://www.trioisawesome.com/base/spec/module/assets/fooooo.js',
