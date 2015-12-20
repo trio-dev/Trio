@@ -66,6 +66,7 @@
     var CSSTemplate = function() {
         this.style = {};
         this._context = null;
+        this.toCSS = this.toCSS.bind(this);
     };
 
     CSSTemplate.prototype.select = function(selector) {

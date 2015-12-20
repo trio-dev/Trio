@@ -9,7 +9,7 @@ describe('The Component Class', function() {
                 .css('background-color', 'white');
 
         tmpl = Trio.Renderer.createTemplate();
-        tmpl.open('style').text(style.toCSS.bind(style)).close()
+        tmpl.open('style').text(style.toCSS).close()
             .open('div.pie-wrapper')
                 .text(function(d) { return d.content; })
                 .open('div.spinner').addClass(function(d) { return d.className; }).close()
@@ -97,7 +97,7 @@ describe('The Component Class', function() {
                     .css('background-color', 'white');
 
             tmpl2 = Trio.Renderer.createTemplate();
-            tmpl2.open('style').text(style2.toCSS.bind(style2)).close()
+            tmpl2.open('style').text(style2.toCSS).close()
                 .open('div.parent-el').addClass(function(d) { return d.className; })
                     .open('test-container').data(function(d) { return d.container; }).close()
                 .close();
