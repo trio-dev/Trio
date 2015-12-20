@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chikeichan/Trio.git#release-0.2.0"
+    "url": "https://github.com/trio-dev/Trio.git#release-0.2.0"
   },
   "author": "Chi Kei Chan",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/chikeichan/Trio/issues"
+    "url": "https://github.com/trio-dev/Trio/issues"
   },
-  "homepage": "https://github.com/chikeichan/Trio",
+  "homepage": "https://github.com/trio-dev/Trio",
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-browserify": "^0.5.1",
