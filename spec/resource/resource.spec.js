@@ -10,6 +10,19 @@ describe('The Resource Class', function() {
                 return JSON.parse(res.responseText);
             });
         });
+
+        it('should call initialize', function() {
+            var init = jasmine.createSpy('init');
+            Trio.Resource.register({
+                name: 'testInit',
+                initialize: init
+            });
+
+            expect(init).toHaveBeenCalledWith({
+                name: 'testInit',
+                initialize: init
+            });
+        });
         
         it('should interceptAllRequest and interceptAllResponse', function(done) {
             Trio.Resource.register({
