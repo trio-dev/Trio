@@ -6,7 +6,7 @@
 A framework for building structure, efficient application with web component.
 
 ## Documentation
-See Trio's Documentation in the [Wiki] (https://github.com/chikeichan/Trio/wiki)
+See Trio's Documentation in the [Wiki](https://github.com/trio-dev/Trio/wiki)
 
 ## Using Trio
 You can acquire Trio using npm:
@@ -14,7 +14,7 @@ You can acquire Trio using npm:
 npm install trio
 ```
 or simply download it from [here][files] and insert it as a script tag.
-[files]: https://github.com/chikeichan/Trio/tree/release-0.2.0/dist
+[files]: https://github.com/trio-dev/Trio/tree/release-0.2.0/dist
 
 ## Developing for Trio
 ### Installing dependencies (from within root directory)
