@@ -1378,7 +1378,7 @@ var scope = {};
             execIndex       = 0,
             condition, loop;
 
-        handleCommand.call(this, this._queue[execIndex], data);
+        handleCommand.call(this, this._queue[execIndex], data || {});
 
         function handleCommand(command, execData) {
             // Grab current state: LOOP, CONDITIONAL, or undefined
