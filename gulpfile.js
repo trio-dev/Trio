@@ -20,12 +20,6 @@ var production   = environments.production;
 var buildSrc = [
     'src/polyfills/*.js',
     'src/init/*.js',
-    'src/helpers/*.js',
-    'src/signal/*.js',
-    'src/module/*.js',
-    'src/resource/*.js',
-    'src/factory/*.js',
-    'src/service/*.js',
     'src/stylizer/*.js',
     'src/renderer/*.js',
     'src/component/*.js',
@@ -36,12 +30,6 @@ var buildSrc = [
 gulp.task('lint', function() {
     return gulp.src([
             'src/init/*.js',
-            'src/helpers/*.js',
-            'src/signal/*.js',
-            'src/module/*.js',
-            'src/resource/*.js',
-            'src/factory/*.js',
-            'src/service/*.js',
             'src/stylizer/*.js',
             'src/renderer/*.js',
             'src/component/*.js',

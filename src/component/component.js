@@ -1,9 +1,4 @@
 (function() {
-    var idGenerator = scope.idGenerator;
-    var componentIdGenerator = idGenerator('component');
-    var Signal = scope.Signal;
-
-
     //////////////////////////////////////////////////////
     ///////////////// COMPONENT MANAGER //////////////////
     //////////////////////////////////////////////////////
@@ -37,17 +32,6 @@
     var Component = function(opts) {
         this.tagName = opts.tagName;
         this.registerElement(opts);
-        this.dataKeygen = idGenerator(this.tagName);
-    };
-
-    Component.prototype.setData = function(data) {
-        var dataKey = this.dataKeygen();
-        COMPONENT_DATASTORE[dataKey] = data;
-        return dataKey;
-    };
-
-    Component.prototype.getData = function(dataKey) {
-        return COMPONENT_DATASTORE[dataKey];
     };
 
     /**
@@ -79,21 +63,11 @@
             // Create shadow root
             shadow = this.createShadowRoot();
 
-            // Grab data from COMPONENT
-            dataKey = this.getAttribute('data-key');
-            data = COMPONENT_DATASTORE[dataKey];
-
             // Append rendered fragments into shadowRoot
-            frag = opts.template.render(data);
+            frag = opts.template.render();
             replaceStyleHost.call(this, frag);
 
             shadow.appendChild(frag);
-
-            delete COMPONENT_DATASTORE[dataKey];
-
-            // Set Trio uuid and signal
-            this.uuid = componentIdGenerator();
-            new Signal(this.uuid, this);
 
             // Create patch method
             this.patch = function(data) {

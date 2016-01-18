@@ -45,14 +45,9 @@ describe('The Component Class', function() {
     });
 
     it('should have trio methods', function() {
-        expect(typeof el.uuid).toBe('string');
+        // expect(typeof el.uuid).toBe('string');
         expect(el.tagName).toBe('TEST-CONTAINER');
         expect(typeof el.clickSpinner).toBe('function');
-        expect(typeof el.on).toBe('function');
-        expect(typeof el.off).toBe('function');
-        expect(typeof el.emit).toBe('function');
-        expect(typeof el.broadcast).toBe('function');
-        expect(typeof el.patch).toBe('function');
     });
 
     it('should register custom element', function() {
